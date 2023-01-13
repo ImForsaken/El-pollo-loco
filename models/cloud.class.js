@@ -6,6 +6,12 @@ class Cloud extends MovableObject {
     constructor() {
         super().loadImage('img/5_background/layers/4_clouds/1.png');
         this.x = Math.random() * 500; //number between 0-700 places clouds in canvas depending on generated number
-
+        this.animate();
     }
+
+    animate() {
+        this.moveLeft();
+    }
+
+
 }
