@@ -6,9 +6,28 @@ class MovableObject {
     height = 150
     width = 100
     speed = 0.15;
+    speedY = 0;
+    acceleration = 2.5;
     imageCache = {};
     currentImage = 0; //current loop itteration for animations
     otherDirection = false;
+
+
+    //make pepe fall
+    applyGravity() {
+        setInterval(() => {
+            if (this.isAboveGround() || this.speedY > 0) {
+                // -= negatives the Number which makes y get higher since speedY is a negative number and gets converted to add because we -= y by speedY
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
+                console.log(this.y)
+            }
+        }, 1000 / 25);
+    }
+
+    isAboveGround() {
+        return this.y < 180;
+    }
 
 
     loadImage(path) {
@@ -24,7 +43,7 @@ class MovableObject {
             img.src = path;
             this.imageCache[path] = img;
         });
-    }
+    };
 
     playAnimation(images) {
         //TODO maybe change this.IMAGES_WALKING.length to images.length since images walking is the same as the parameter givin into the function ask DA coaches
@@ -33,16 +52,21 @@ class MovableObject {
         let path = images[i];
         this.img = this.imageCache[path];
         this.currentImage++;
-    }
+    };
 
-    // moveRight() {
-    //     this.x += this.speed;
-    //     console.log('moveRight');
-    // }
+    moveRight() {
+        //walk to right position by increasing x by speed
+        this.x += this.speed;
+
+    }
 
     moveLeft(speed) {
-        setInterval(() => {
-            this.x -= speed;
-        }, 1000 / 60);
-    }
+        //walk to left position by decreasing x by speed
+        this.x -= speed;
+    };
+
+
+    jump() {
+        this.speedY = 30;
+    };
 }

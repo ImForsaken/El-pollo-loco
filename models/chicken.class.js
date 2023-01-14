@@ -12,7 +12,8 @@ class Chicken extends MovableObject {
     //here we load function we want the object to start with otherwise the chicken would not be animated
     constructor() {
         //TODO noch mal das Video zum super() anschauen um zu verstehen ob variablen innerhalb von super geschrieben werden müssen oder nicht da junus sagt das wir super nur für methoden benötigen
-        super().loadImage(this.IMAGES_WALKING[0]);
+        super();
+        this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.x = 300 + Math.random() * 400; //number between 200- 700
         this.speed = 0.15 + Math.random() * 0.5;
@@ -20,7 +21,10 @@ class Chicken extends MovableObject {
     }
 
     animate() {
-        this.moveLeft(this.speed);
+        setInterval(() => {
+            this.moveLeft(this.speed);
+        }, 1000 / 60);
+
         setInterval(() => {
             this.playAnimation(this.IMAGES_WALKING);
         }, 200);
