@@ -1,0 +1,14 @@
+AUFGABEN
+
+
+1 coins einsammeln
+2 flaschen einsammeln
+3 Flaschen nur werfen wenn vorhanden
+3.5 Flaschen in die Richtige richtung werfen 
+4 collision
+5 endgegner besiegen
+6 Game-over screen
+7 fullscreen
+8 erklärung der Tasten
+9 Start screen
+10 Musik + sounds

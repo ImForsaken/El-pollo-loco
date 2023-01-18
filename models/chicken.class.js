@@ -7,11 +7,15 @@ class Chicken extends MovableObject {
         'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
         'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
     ];
-
+    offset = {
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    };
 
     //here we load function we want the object to start with otherwise the chicken would not be animated
     constructor() {
-        //TODO noch mal das Video zum super() anschauen um zu verstehen ob variablen innerhalb von super geschrieben werden müssen oder nicht da junus sagt das wir super nur für methoden benötigen
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);

@@ -5,6 +5,10 @@ class World {
     ctx;
     keyboard;
     camera_x;
+    statusBarHealth = new StatusbarHealth();
+    statusBarCoin = new StatusbarCoin();
+    statusBarBottle = new StatusbarBottle();
+    throwableObjects = [];
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -12,6 +16,7 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
+        this.run();
     }
 
     //makes it possible for character object to access the variables of the world class object like keyboard
@@ -20,13 +25,55 @@ class World {
         this.character.world = this;
     }
 
+
+
+
+    //checks if a chicken is colliding with character by getting into the level variable which contains our enemys
+    run() {
+        setInterval(() => {
+            this.checkCollisions();
+            this.checkThrowObjects();
+        }, 200);
+    }
+
+
+    checkThrowObjects() {
+        if (this.keyboard.D) {
+            let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+            this.throwableObjects.push(bottle);
+        }
+    }
+
+    checkCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            // console.log('this is chicken', enemy.x);
+            // console.log('this is character', this.character.x + (this.character.width - this.character.offset.left));
+            if (this.character.isColliding(enemy)) {
+                this.character.hit();
+                this.statusBarHealth.setPercentage(this.character.energy);
+                // console.log('HITTED', this.character.energy);
+            }
+        });
+    }
+
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height) //clears the screen everytime draw is called
             //focus the camera on the character
         this.ctx.translate(this.camera_x, 0);
-
         this.addObjectToMap(this.level.backgroundObjects);
+
+        this.ctx.translate(-this.camera_x, 0); //Back
+        // ----- space for fixed objects ------
+        this.addToMap(this.statusBarBottle);
+        this.addToMap(this.statusBarHealth);
+        this.addToMap(this.statusBarCoin);
+        this.ctx.translate(this.camera_x, 0); //Forwards
+
+        //------ end space for fixed objects-----
+
+
         this.addObjectToMap(this.level.clouds);
+        this.addObjectToMap(this.throwableObjects);
         this.addObjectToMap(this.level.enemies);
         this.addToMap(this.character);
         this.ctx.translate(-this.camera_x, 0);
@@ -43,7 +90,7 @@ class World {
     //array objects or single object which we add to world like chicken, character etc
     addObjectToMap(object) {
         object.forEach(o => {
-            this.addToMap(o)
+            this.addToMap(o);
         });
     }
 
@@ -52,11 +99,16 @@ class World {
         if (mo.otherDirection) {
             this.flipImage(mo);
         }
-        this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
+
+        mo.drawObjectToMap(this.ctx);
+        mo.drawFrameAroundObject(this.ctx);
+
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
     };
+
+
 
     flipImage(mo) {
         //saves current canvas details so it can later be restored()
