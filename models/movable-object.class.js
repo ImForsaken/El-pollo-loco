@@ -27,9 +27,10 @@ class MovableObject extends DrawableObject {
         }, 1000 / 25);
     };
 
+
     isAboveGround() {
-        if ((this instanceof ThrowableObject)) { //throwable object should always fall
-            return true
+        if ((this instanceof ThrowableObject)) { //throwable object should always fall normaly fall instead of this.y < 360
+            return this.y < 360;
         } else {
             return this.y < 180;
         }
@@ -68,7 +69,7 @@ class MovableObject extends DrawableObject {
 
 
     isDead() {
-        return this.energy == 0 && this.loadImage('img/2_character_pepe/5_dead/D-57.png');
+        return this.energy == 0;
     }
 
 

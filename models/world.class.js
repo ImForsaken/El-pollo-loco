@@ -36,10 +36,13 @@ class World {
         }, 200);
     }
 
-
+    //TODO THIS:CHARACTER MAYBE DELETE AS PAREMTER SAME FOR THROWABLE CLASS
     checkThrowObjects() {
-        if (this.keyboard.D) {
-            let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+        if (this.keyboard.D && !this.character.otherDirection) {
+            let bottle = new ThrowableObject(this.character.x + 50, this.character.y + 100, this.character.otherDirection);
+            this.throwableObjects.push(bottle);
+        } else if (this.keyboard.D && this.character.otherDirection) {
+            let bottle = new ThrowableObject(this.character.x - 10, this.character.y + 100, this.character.otherDirection);
             this.throwableObjects.push(bottle);
         }
     }
@@ -62,6 +65,12 @@ class World {
         this.ctx.translate(this.camera_x, 0);
         this.addObjectToMap(this.level.backgroundObjects);
 
+
+
+        this.addObjectToMap(this.level.clouds);
+        this.addObjectToMap(this.throwableObjects);
+        this.addObjectToMap(this.level.enemies);
+
         this.ctx.translate(-this.camera_x, 0); //Back
         // ----- space for fixed objects ------
         this.addToMap(this.statusBarBottle);
@@ -69,12 +78,8 @@ class World {
         this.addToMap(this.statusBarCoin);
         this.ctx.translate(this.camera_x, 0); //Forwards
 
+
         //------ end space for fixed objects-----
-
-
-        this.addObjectToMap(this.level.clouds);
-        this.addObjectToMap(this.throwableObjects);
-        this.addObjectToMap(this.level.enemies);
         this.addToMap(this.character);
         this.ctx.translate(-this.camera_x, 0);
 
