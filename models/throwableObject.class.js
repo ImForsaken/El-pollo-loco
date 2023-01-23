@@ -1,5 +1,7 @@
 class ThrowableObject extends MovableObject {
 
+    throwing = false;
+
     IMAGES_SPLASH = [
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png',
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png',
@@ -24,13 +26,15 @@ class ThrowableObject extends MovableObject {
     throw () {
         //THROW RIGHT IF CHAR LOOKS RIGHT SIDE  - OD FALSE
         if (!this.otherDirection) {
+            this.throwing = true;
             this.speedY = 30;
             this.applyGravity();
-            setInterval(() => {
+            let interval1 = setInterval(() => {
                 this.x += 10;
-                console.log(this.y)
-                if (this.isAboveGround) {
-                    this.playAnimation(this.IMAGES_SPLASH);
+                console.log(this.y);
+                if (this.y >= 380) {
+                    clearInterval(interval1);
+                    this.loadImage('img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png');
 
                 }
             }, 25);
@@ -38,11 +42,18 @@ class ThrowableObject extends MovableObject {
         } else if (this.otherDirection) {
             this.speedY = 30;
             this.applyGravity();
-            setInterval(() => {
+            let interval2 = setInterval(() => {
                 this.x -= 10;
+                if (this.y >= 380) {
+                    this.loadImage('img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png');
+                    clearInterval(interval2);
+                }
             }, 25);
         }
 
     }
+
+
+
 
 }

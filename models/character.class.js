@@ -14,6 +14,7 @@ class Character extends MovableObject {
         bottom: 0,
         x: 20
     };
+    isAlreadyDead = false;
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -73,12 +74,12 @@ class Character extends MovableObject {
         //checks 60times per second which key has been pressed by checking the keyboard direction variables
         setInterval(() => {
 
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x && this.energy > 0) {
                 this.moveRight();
                 this.otherDirection = false;
                 this.walking_sound.play();
             }
-            if (this.world.keyboard.LEFT && this.x > -100) {
+            if (this.world.keyboard.LEFT && this.x > -100 && this.energy > 0) {
                 this.moveLeft(this.speed);
                 this.walking_sound.play();
                 this.otherDirection = true;
@@ -86,7 +87,7 @@ class Character extends MovableObject {
                 //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
                 //this.world.camera_x = -this.x + 100;
             }
-            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+            if (this.world.keyboard.SPACE && !this.isAboveGround() && this.energy > 0) {
                 this.jump();
             }
 
@@ -107,17 +108,18 @@ class Character extends MovableObject {
 
         //checks pressed key and starts animation of character
         setInterval(() => {
-            if (this.isDead()) {
+            if (this.isDead() && !this.isAlreadyDead) {
                 this.playAnimation(this.IMAGES_DEAD);
             } else if (this.isHurt() && this.energy > 0) {
                 this.playAnimation(this.IMAGES_HURT);
-            } else if (this.isAboveGround() && this.energy > 0) {
+            } else if (this.isAboveGround()) {
+                // console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y < 0))
                 this.playAnimation(this.IMAGES_JUMPING);
             } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.energy > 0) {
                 //Walk animation
                 this.playAnimation(this.IMAGES_WALKING);
             }
-        }, 50);
+        }, 150);
 
     };
 

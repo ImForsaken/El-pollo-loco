@@ -17,6 +17,8 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
+        this.run2();
+        this.run3();
     }
 
     //makes it possible for character object to access the variables of the world class object like keyboard
@@ -27,13 +29,30 @@ class World {
 
 
 
-
-    //checks if a chicken is colliding with character by getting into the level variable which contains our enemys
+    //checks if character jumps an hit chicken from top
     run() {
         setInterval(() => {
+            // this.checkCollisions();
+            this.checkCharacterHitChicken();
+            // this.checkChickenCollision();
+        }, 150);
+    }
+
+
+    //checks if a chicken is colliding with character by getting into the level variable which contains our enemys
+
+    run2() {
+        setInterval(() => {
             this.checkCollisions();
+        }, 500);
+    }
+
+
+    //checks if bottle breaks
+    run3() {
+        setInterval(() => {
             this.checkThrowObjects();
-        }, 200);
+        }, 300);
     }
 
     //TODO THIS:CHARACTER MAYBE DELETE AS PAREMTER SAME FOR THROWABLE CLASS
@@ -45,19 +64,61 @@ class World {
             let bottle = new ThrowableObject(this.character.x - 10, this.character.y + 100, this.character.otherDirection);
             this.throwableObjects.push(bottle);
         }
+        if (this.throwableObjects.length > 0) {
+            this.throwableObjects.forEach(bottle => {
+                if (bottle.lastY >= 380) {
+                    this.throwableObjects.splice(bottle, 1);
+                }
+            });
+        }
+    }
+
+
+    //TODO IMPLEMENT THAT BOTTLES GET SPLICED
+    checkBottleHeight() {
+        this.throwableObjects.forEach(bottle => {
+            if (bottle.lastY > 360) {
+                this.throwableObjects.splice(bottle, 1);
+                clearInterval(bottle);
+            }
+        });
     }
 
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
             // console.log('this is chicken', enemy.x);
             // console.log('this is character', this.character.x + (this.character.width - this.character.offset.left));
-            if (this.character.isColliding(enemy)) {
+            if (this.character.isColliding(enemy) && enemy.energy > 0) {
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
                 // console.log('HITTED', this.character.energy);
             }
         });
     }
+
+    checkCharacterHitChicken() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isCollidingFromTop(enemy) && this.character.y <= 135) {
+                console.log(this.character.y)
+                enemy.energy = 0;
+                // setTimeout(() => {
+                //     this.level.enemies.splice(enemy, 1);
+                // }, 1300);
+                console.log(enemy.energy);
+            }
+        });
+    }
+
+
+    // checkChickenCollision() {
+    //     this.level.enemies.forEach((enemy) => {
+    //         if (this.throwableObjects.isColliding(enemy)) {
+    //             enemy.energy == 0;
+    //             console.log(enemy.energy);
+    //         }
+    //     });
+    // }
+
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height) //clears the screen everytime draw is called
@@ -107,7 +168,8 @@ class World {
 
         mo.drawObjectToMap(this.ctx);
         mo.drawFrameAroundObject(this.ctx);
-
+        //TODO ADD THIS WHEN WE ADD DRAWCODRINATES
+        // mo.drawCoordinates(this.ctx);
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }

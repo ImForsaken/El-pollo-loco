@@ -8,6 +8,10 @@ class MovableObject extends DrawableObject {
     otherDirection = false;
     energy = 100;
     lastHit = 0;
+    intervalID;
+    isDamaged = false;
+    lastY = 0;
+    isAlreadyDead = false;
     offset = {
         top: 0,
         left: 0,
@@ -22,15 +26,17 @@ class MovableObject extends DrawableObject {
                 // -= negatives the Number which makes y get higher since speedY is a negative number and gets converted to add because we -= y by speedY
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
+                this.lastY = this.y;
                 // console.log(this.y)
             }
         }, 1000 / 25);
     };
 
 
+
     isAboveGround() {
         if ((this instanceof ThrowableObject)) { //throwable object should always fall normaly fall instead of this.y < 360
-            return this.y < 360;
+            return true;
         } else {
             return this.y < 180;
         }
@@ -47,11 +53,22 @@ class MovableObject extends DrawableObject {
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
     }
 
+    isCollidingFromTop(mo) {
+        return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
+            this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
+            this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
+            this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
+    }
+
+
+    checkTop(mo) {
+        return mo.y + mo.offset.top < this.y + this.height - this.offset.bottom
+    }
 
 
     hit() {
-        //maybe switch -= energy calculation to else since hits will be always calculated
         this.energy -= 20;
+        //maybe switch -= energy calculation to else since hits will be always calculated
         if (this.energy < 0) {
             this.energy = 0;
         } else {
@@ -73,10 +90,7 @@ class MovableObject extends DrawableObject {
     }
 
 
-
-
     playAnimation(images) {
-
         let i = this.currentImage % images.length; // let i = 0 % 6; => 0, Rest 0
         // i = 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0
         let path = images[i];
@@ -85,14 +99,12 @@ class MovableObject extends DrawableObject {
     };
 
 
-
-
-
     moveRight() {
         //walk to right position by increasing x by speed
         this.x += this.speed;
 
     };
+
 
     moveLeft(speed) {
         //walk to left position by decreasing x by speed
