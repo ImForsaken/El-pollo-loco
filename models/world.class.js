@@ -35,7 +35,7 @@ class World {
             // this.checkCollisions();
             this.checkCharacterHitChicken();
             // this.checkChickenCollision();
-        }, 150);
+        }, 50);
     }
 
 
@@ -44,7 +44,7 @@ class World {
     run2() {
         setInterval(() => {
             this.checkCollisions();
-        }, 500);
+        }, 50);
     }
 
 
@@ -79,32 +79,31 @@ class World {
         this.throwableObjects.forEach(bottle => {
             if (bottle.lastY > 360) {
                 this.throwableObjects.splice(bottle, 1);
-                clearInterval(bottle);
             }
         });
     }
 
+
+    //    console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y)) Schaden des hühnchen abhängig davon machen ob man fällt berechneter wert muss < 0 sein
+
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
-            // console.log('this is chicken', enemy.x);
-            // console.log('this is character', this.character.x + (this.character.width - this.character.offset.left));
-            if (this.character.isColliding(enemy) && enemy.energy > 0) {
+            if (this.character.isColliding(enemy) && !this.character.isHurt(this.character.immortalDuration) && enemy.energy > 0 && this.character.onTheGround()) {
+                console.log('Char Y', this.character.y)
                 this.character.hit();
                 this.statusBarHealth.setPercentage(this.character.energy);
-                // console.log('HITTED', this.character.energy);
             }
+
         });
     }
 
     checkCharacterHitChicken() {
         this.level.enemies.forEach((enemy) => {
-            if (this.character.isCollidingFromTop(enemy) && this.character.y <= 135) {
-                console.log(this.character.y)
+            if (this.character.isColliding(enemy) && this.character.y <= 135 && !this.character.isHurt(this.character.immortalDuration)) {
                 enemy.energy = 0;
                 // setTimeout(() => {
                 //     this.level.enemies.splice(enemy, 1);
                 // }, 1300);
-                console.log(enemy.energy);
             }
         });
     }

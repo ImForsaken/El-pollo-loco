@@ -1,6 +1,5 @@
 class ThrowableObject extends MovableObject {
 
-    throwing = false;
 
     IMAGES_SPLASH = [
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png',
@@ -11,31 +10,37 @@ class ThrowableObject extends MovableObject {
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png',
     ];
 
+    IMAGES_ROTATION = [
+        'img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
+        'img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
+        'img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
+        'img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png',
+    ];
+
     constructor(x, y, otherDirection) {
         super();
         this.loadImage('img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png');
         this.loadImages(this.IMAGES_SPLASH);
+        this.loadImages(this.IMAGES_ROTATION);
         this.x = x;
         this.y = y;
         this.height = 60;
         this.width = 50;
         this.otherDirection = otherDirection;
         this.throw();
+        this.animte();
     }
 
     throw () {
         //THROW RIGHT IF CHAR LOOKS RIGHT SIDE  - OD FALSE
         if (!this.otherDirection) {
-            this.throwing = true;
             this.speedY = 30;
             this.applyGravity();
             let interval1 = setInterval(() => {
                 this.x += 10;
-                console.log(this.y);
                 if (this.y >= 380) {
                     clearInterval(interval1);
                     this.loadImage('img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png');
-
                 }
             }, 25);
             //THROW LEFT IF CHAR LOOKS LEFT SIDE - OD TRUE
@@ -54,6 +59,14 @@ class ThrowableObject extends MovableObject {
     }
 
 
+
+    animte() {
+        setInterval(() => {
+
+            this.playAnimation(this.IMAGES_ROTATION);
+
+        }, 50);
+    }
 
 
 }

@@ -10,8 +10,10 @@ class MovableObject extends DrawableObject {
     lastHit = 0;
     intervalID;
     isDamaged = false;
+    immortalDuration = 0;
     lastY = 0;
     isAlreadyDead = false;
+
     offset = {
         top: 0,
         left: 0,
@@ -27,6 +29,7 @@ class MovableObject extends DrawableObject {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
                 this.lastY = this.y;
+                // FÜR FLASCHE BESSER UM GENAUER ZU SEIN
                 // console.log(this.y)
             }
         }, 1000 / 25);
@@ -43,26 +46,89 @@ class MovableObject extends DrawableObject {
     };
 
 
+    onTheGround() {
+        return this.y >= 180
+    }
+
     //TODO new variablen declaration for better syntax
 
     isColliding(mo) {
-
-        return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
-            this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
-            this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
-            this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
-    }
-
-    isCollidingFromTop(mo) {
-        return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
-            this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
-            this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
-            this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
+        return this.charRightCollideMoLeft(mo) &&
+            this.charBottomCollideMoTop(mo) &&
+            this.charLeftCollideMoRight(mo) &&
+            this.charTopCollideWithMoBottom(mo);
     }
 
 
-    checkTop(mo) {
-        return mo.y + mo.offset.top < this.y + this.height - this.offset.bottom
+    //original colliding Function
+    // isColliding2(mo) {
+    //     return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
+    //         this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
+    //         this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
+    //         this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
+    // }
+
+
+    //Colliding functions seperated for better syntax
+
+
+    charRightCollideMoLeft(mo) {
+        return this.isRightSideChar() > this.leftSideFrom(mo);
+    };
+
+
+    isRightSideChar() {
+        return this.x + this.width - this.offset.right;
+    };
+
+
+    leftSideFrom(mo) {
+        return mo.x + mo.offset.left;
+    };
+
+
+    charBottomCollideMoTop(mo) {
+        return this.isBottomSideChar() > this.topSideFrom(mo);
+    }
+
+
+    isBottomSideChar() {
+        return this.y + this.height - this.offset.bottom;
+    };
+
+
+    topSideFrom(mo) {
+        return mo.y + mo.offset.top;
+    };
+
+
+    charLeftCollideMoRight(mo) {
+        return this.isLeftSideChar() < this.rightSideFrom(mo);
+    }
+
+
+    isLeftSideChar() {
+        return this.x + this.offset.left;
+    }
+
+
+    rightSideFrom(mo) {
+        return mo.x + mo.width - mo.offset.right;
+    }
+
+
+    charTopCollideWithMoBottom(mo) {
+        return this.isTopSideChar() < this.bottomSideFrom(mo);
+    }
+
+
+    isTopSideChar() {
+        return this.y + this.offset.top;
+    }
+
+
+    bottomSideFrom(mo) {
+        return mo.y + mo.height - mo.offset.bottom;
     }
 
 
@@ -77,12 +143,13 @@ class MovableObject extends DrawableObject {
     }
 
     //checks if character is hurt starting by 0secs if character is colliding prob make a booleon to make animation appear only once
-    isHurt() {
+    isHurt(immortalDuration) {
         let timepassed = new Date().getTime() - this.lastHit; // difference in ms
         timepassed = timepassed / 1000; // difference in seconds
-        // console.log(timepassed);
-        return timepassed < 1;
+        return timepassed < immortalDuration;
     }
+
+
 
 
     isDead() {
@@ -91,6 +158,7 @@ class MovableObject extends DrawableObject {
 
 
     playAnimation(images) {
+
         let i = this.currentImage % images.length; // let i = 0 % 6; => 0, Rest 0
         // i = 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0
         let path = images[i];
@@ -110,7 +178,6 @@ class MovableObject extends DrawableObject {
         //walk to left position by decreasing x by speed
         this.x -= speed;
     };
-
 
     jump() {
         this.speedY = 30;

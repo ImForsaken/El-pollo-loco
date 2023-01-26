@@ -1,11 +1,13 @@
 class Character extends MovableObject {
     // y = 184;
     height = 250;
-    y = 80;
+    //y  = 90;
+    y = 190;
     //width is 100;
     //world is the variable which make it possible for the class character to have access to variables of class world
     world;
     speed = 5;
+    immortalDuration = 1.5;
     walking_sound = new Audio('audio/standardWalking.mp3');
     offset = {
         top: 80,
@@ -78,14 +80,20 @@ class Character extends MovableObject {
                 this.moveRight();
                 this.otherDirection = false;
                 this.walking_sound.play();
+                console.log(-this.x + 120)
+                this.world.camera_x = -this.x + 120;
+
             }
             if (this.world.keyboard.LEFT && this.x > -100 && this.energy > 0) {
                 this.moveLeft(this.speed);
                 this.walking_sound.play();
                 this.otherDirection = true;
-
-                //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
-                //this.world.camera_x = -this.x + 100;
+                this.smoothCamera();
+                console.log(-this.x + 120)
+                    // console.log(-this.x + 500)
+                    // this.world.camera_x = -this.x + 500;
+                    //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
+                    //this.world.camera_x = -this.x + 100;
             }
             if (this.world.keyboard.SPACE && !this.isAboveGround() && this.energy > 0) {
                 this.jump();
@@ -93,7 +101,6 @@ class Character extends MovableObject {
 
 
             //focus camera on character and changes the starting point of him
-            this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
 
@@ -110,10 +117,10 @@ class Character extends MovableObject {
         setInterval(() => {
             if (this.isDead() && !this.isAlreadyDead) {
                 this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt() && this.energy > 0) {
+            } else if (this.isHurt(this.immortalDuration) && this.energy > 0) {
                 this.playAnimation(this.IMAGES_HURT);
             } else if (this.isAboveGround()) {
-                // console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y < 0))
+                // console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y))
                 this.playAnimation(this.IMAGES_JUMPING);
             } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.energy > 0) {
                 //Walk animation
@@ -123,9 +130,15 @@ class Character extends MovableObject {
 
     };
 
+    smoothCamera() {
+        if (this.otherDirection && this.world.camera_x > 0) {
+            console.log('works')
+            this.world.camera_x = -this.x + 5;
 
-
-
+        } else if (!this.otherDirection && this.world.camera_x < 0) {
+            this.world.camera_x += 10;
+        }
+    }
 
 
 }
