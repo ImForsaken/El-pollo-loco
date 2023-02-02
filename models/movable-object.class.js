@@ -29,12 +29,18 @@ class MovableObject extends DrawableObject {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
                 this.lastY = this.y;
-                // FÜR FLASCHE BESSER UM GENAUER ZU SEIN
                 // console.log(this.y)
+                if (!this.isAboveGround()) {
+                    this.speedY = 0;
+                }
             }
         }, 1000 / 25);
     };
 
+
+    characterIsFalling() {
+        return this.speedY < 0;
+    }
 
 
     isAboveGround() {
@@ -46,9 +52,12 @@ class MovableObject extends DrawableObject {
     };
 
 
+
+
+
     onTheGround() {
         return this.y >= 180
-    }
+    };
 
     //TODO new variablen declaration for better syntax
 
@@ -57,8 +66,16 @@ class MovableObject extends DrawableObject {
             this.charBottomCollideMoTop(mo) &&
             this.charLeftCollideMoRight(mo) &&
             this.charTopCollideWithMoBottom(mo);
-    }
+    };
 
+
+    isCollidingHorizontal(mo) {
+        return this.charRightCollideMoLeft(mo) && this.charLeftCollideMoRight(mo);
+    };
+
+    isCollidingVerticaly(mo) {
+        return this.charBottomCollideMoTop(mo) && this.charTopCollideWithMoBottom(mo);
+    };
 
     //original colliding Function
     // isColliding2(mo) {
@@ -67,6 +84,8 @@ class MovableObject extends DrawableObject {
     //         this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
     //         this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
     // }
+
+
 
 
     //Colliding functions seperated for better syntax
@@ -89,7 +108,7 @@ class MovableObject extends DrawableObject {
 
     charBottomCollideMoTop(mo) {
         return this.isBottomSideChar() > this.topSideFrom(mo);
-    }
+    };
 
 
     isBottomSideChar() {
@@ -104,7 +123,7 @@ class MovableObject extends DrawableObject {
 
     charLeftCollideMoRight(mo) {
         return this.isLeftSideChar() < this.rightSideFrom(mo);
-    }
+    };
 
 
     isLeftSideChar() {
@@ -132,10 +151,10 @@ class MovableObject extends DrawableObject {
     }
 
 
-    hit() {
-        this.energy -= 20;
+    hit(dmg) {
+        this.energy -= dmg;
         //maybe switch -= energy calculation to else since hits will be always calculated
-        if (this.energy < 0) {
+        if (this.energy <= 0) {
             this.energy = 0;
         } else {
             this.lastHit = new Date().getTime();
@@ -178,6 +197,7 @@ class MovableObject extends DrawableObject {
         //walk to left position by decreasing x by speed
         this.x -= speed;
     };
+
 
     jump() {
         this.speedY = 30;

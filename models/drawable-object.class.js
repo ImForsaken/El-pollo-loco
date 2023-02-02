@@ -6,19 +6,21 @@ class DrawableObject {
     y = 280;
     height = 150
     width = 100
+    deadLoop = 0;
+    alertLoop = 0;
 
 
 
     //only draws a border/frame around the object if its an instance of Chicken or Character
     drawFrameAroundObject(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject) {
             ctx.beginPath();
             ctx.lineWidth = '1';
             ctx.strokeStyle = 'blue';
             ctx.rect(this.x, this.y, this.width, this.height);
             ctx.stroke();
         }
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject) {
             ctx.beginPath();
             ctx.lineWidth = '1';
             ctx.strokeStyle = 'red';
@@ -55,7 +57,26 @@ class DrawableObject {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     };
 
+    //setPercentage(100);
+    setPercentage(percentage) {
+        this.percentage = percentage; // => 0....5
+        let path = this.IMAGES[this.resolveImageIndex()]
+        this.img = this.imageCache[path];
+    }
 
-
-
+    resolveImageIndex() {
+        if (this.percentage == 100) {
+            return 5;
+        } else if (this.percentage >= 80) {
+            return 4;
+        } else if (this.percentage >= 60) {
+            return 3;
+        } else if (this.percentage >= 40) {
+            return 2;
+        } else if (this.percentage >= 20) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 }

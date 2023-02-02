@@ -3,6 +3,7 @@ class Character extends MovableObject {
     height = 250;
     //y  = 90;
     y = 190;
+    charDmg = 20;
     //width is 100;
     //world is the variable which make it possible for the class character to have access to variables of class world
     world;
@@ -16,7 +17,6 @@ class Character extends MovableObject {
         bottom: 0,
         x: 20
     };
-    isAlreadyDead = false;
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -80,7 +80,7 @@ class Character extends MovableObject {
                 this.moveRight();
                 this.otherDirection = false;
                 this.walking_sound.play();
-                console.log(-this.x + 120)
+                // console.log(-this.x + 120)
                 this.world.camera_x = -this.x + 120;
 
             }
@@ -88,12 +88,11 @@ class Character extends MovableObject {
                 this.moveLeft(this.speed);
                 this.walking_sound.play();
                 this.otherDirection = true;
-                this.smoothCamera();
-                console.log(-this.x + 120)
-                    // console.log(-this.x + 500)
-                    // this.world.camera_x = -this.x + 500;
-                    //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
-                    //this.world.camera_x = -this.x + 100;
+                // console.log(-this.x + 120)
+                // console.log(-this.x + 500)
+                this.world.camera_x = -this.x + 500;
+                //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
+                //this.world.camera_x = -this.x + 100;
             }
             if (this.world.keyboard.SPACE && !this.isAboveGround() && this.energy > 0) {
                 this.jump();
@@ -115,20 +114,33 @@ class Character extends MovableObject {
 
         //checks pressed key and starts animation of character
         setInterval(() => {
-            if (this.isDead() && !this.isAlreadyDead) {
-                this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt(this.immortalDuration) && this.energy > 0) {
+            if (this.isHurt(this.immortalDuration) && !this.isDead()) {
                 this.playAnimation(this.IMAGES_HURT);
-            } else if (this.isAboveGround()) {
+            } else if (this.isAboveGround() && !this.isDead()) {
                 // console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y))
                 this.playAnimation(this.IMAGES_JUMPING);
-            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.energy > 0) {
+            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.energy > 0 && !this.isDead()) {
                 //Walk animation
                 this.playAnimation(this.IMAGES_WALKING);
+            } else if (!this.isDead()) {
+                this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
             }
-        }, 150);
+        }, 250);
+
+
+        setInterval(() => {
+            if (this.isDead() && !this.isHurt()) {
+                if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
+                    this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
+                    this.deadLoop += 1;
+                }
+            }
+        }, 350);
+
 
     };
+
+
 
     smoothCamera() {
         if (this.otherDirection && this.world.camera_x > 0) {

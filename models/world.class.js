@@ -6,6 +6,7 @@ class World {
     keyboard;
     camera_x;
     statusBarHealth = new StatusbarHealth();
+    statusBarHealthBoss = new StatusbarHealthBoss();
     statusBarCoin = new StatusbarCoin();
     statusBarBottle = new StatusbarBottle();
     throwableObjects = [];
@@ -19,6 +20,7 @@ class World {
         this.run();
         this.run2();
         this.run3();
+        this.run4();
     }
 
     //makes it possible for character object to access the variables of the world class object like keyboard
@@ -39,7 +41,7 @@ class World {
     }
 
 
-    //checks if a chicken is colliding with character by getting into the level variable which contains our enemys
+    //checks if a chicken is colliding with character or bottle by getting into the level variable which contains our enemys
 
     run2() {
         setInterval(() => {
@@ -52,71 +54,113 @@ class World {
     run3() {
         setInterval(() => {
             this.checkThrowObjects();
-        }, 300);
+        }, 350);
+    }
+
+
+    run4() {
+        setInterval(() => {
+            this.checkBottleCollision();
+            this.checkIfBossIsInVision();
+        }, 50);
+    }
+
+
+
+    checkIfBossIsInVision() {
+        if (this.character.x >= 250 && !this.level.endboss.denyCheck) {
+            console.log('IN VISION')
+            this.level.endboss.inVision = true;
+        }
+        if (!this.level.endboss.isDead() && (this.character.x + (this.character.width / 2)) < this.level.endboss.x + (this.level.endboss.width / 2) - 500 && this.level.endboss.bossRageStart) {
+            console.log('Boss runs left', this.level.endboss.x + (this.level.endboss.width / 2))
+            this.level.endboss.otherDirection = false;
+
+        } else if (!this.level.endboss.isDead() && this.character.x + (this.character.width / 2) > this.level.endboss.x + (this.level.endboss.width / 2) + 500 && this.level.endboss.bossRageStart) {
+            console.log('Boss runs right', this.level.endboss.x + (this.level.endboss.width / 2))
+            this.level.endboss.otherDirection = true;
+        }
     }
 
     //TODO THIS:CHARACTER MAYBE DELETE AS PAREMTER SAME FOR THROWABLE CLASS
     checkThrowObjects() {
-        if (this.keyboard.D && !this.character.otherDirection) {
+        if (this.keyboard.D && !this.character.otherDirection && !this.character.isDead()) {
             let bottle = new ThrowableObject(this.character.x + 50, this.character.y + 100, this.character.otherDirection);
             this.throwableObjects.push(bottle);
-        } else if (this.keyboard.D && this.character.otherDirection) {
+        } else if (this.keyboard.D && this.character.otherDirection && !this.character.isDead()) {
             let bottle = new ThrowableObject(this.character.x - 10, this.character.y + 100, this.character.otherDirection);
             this.throwableObjects.push(bottle);
         }
-        if (this.throwableObjects.length > 0) {
-            this.throwableObjects.forEach(bottle => {
-                if (bottle.lastY >= 380) {
-                    this.throwableObjects.splice(bottle, 1);
-                }
+        // if (this.throwableObjects.length > 0) {
+        //     this.throwableObjects.forEach(bottle => {
+        //         if (bottle.lastY >= 430) {
+        //             console.log('splice Bottle', this.throwableObjects)
+        //             this.throwableObjects.splice(bottle, 1);
+        //         }
+        //     });
+        // }
+    }
+
+    checkBottleCollision() {
+        this.throwableObjects.forEach((bottle) => {
+            this.level.enemies.forEach((enemy) => {
+
+                if (bottle.isColliding(enemy) && !bottle.bottleHit && !enemy.isDead()) {
+                    bottle.bottleHit = true;
+                    enemy.hit(bottle.bottleDamage);
+                    setTimeout(() => {
+                        this.level.enemies.splice(this.level.enemies.indexOf(enemy), 1);
+                        this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
+                    }, 500);
+
+                };
             });
-        }
-    }
-
-
-    //TODO IMPLEMENT THAT BOTTLES GET SPLICED
-    checkBottleHeight() {
-        this.throwableObjects.forEach(bottle => {
-            if (bottle.lastY > 360) {
-                this.throwableObjects.splice(bottle, 1);
-            }
+            if (!this.level.endboss.isHurt(this.level.endboss.immortalDuration) && !bottle.bottleHit && !this.level.endboss.isDead() && bottle.isColliding(this.level.endboss)) {
+                bottle.bottleHit = true;
+                this.level.endboss.hit(bottle.bottleDamage);
+                this.statusBarHealthBoss.setPercentage(this.level.endboss.energy);
+            };
+            if (bottle.lastY >= 340 && !bottle.bottleHit) {
+                bottle.bottleHit = true;
+                setTimeout(() => {
+                    this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
+                }, 500);
+            };
         });
-    }
+    };
 
 
-    //    console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y)) Schaden des hühnchen abhängig davon machen ob man fällt berechneter wert muss < 0 sein
 
+    //checks if character gets dmg from chicken
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy) && !this.character.isHurt(this.character.immortalDuration) && enemy.energy > 0 && this.character.onTheGround()) {
-                console.log('Char Y', this.character.y)
-                this.character.hit();
+            if (!this.character.isAboveGround() && !this.character.isHurt(this.character.immortalDuration) && enemy.energy > 0 && this.character.isCollidingHorizontal(enemy)) {
+                this.character.hit(enemy.chickenDamage);
                 this.statusBarHealth.setPercentage(this.character.energy);
             }
-
         });
-    }
+        //checks if character collides with endboss
+        if (!this.character.isHurt(this.character.immortalDuration) && this.level.endboss.energy > 0 && this.character.isCollidingHorizontal(this.level.endboss)) {
+            this.character.hit(this.level.endboss.endbossDamage);
+            this.statusBarHealth.setPercentage(this.character.energy);
+            this.level.endboss.isAttacking = true;
+        } else {
+            this.level.endboss.isAttacking = false;
+        }
+    };
 
+
+    //Character hits chicken from top and kills         this.character.y <= 115
     checkCharacterHitChicken() {
         this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy) && this.character.y <= 135 && !this.character.isHurt(this.character.immortalDuration)) {
-                enemy.energy = 0;
-                // setTimeout(() => {
-                //     this.level.enemies.splice(enemy, 1);
-                // }, 1300);
+            if (!enemy.isDead() && this.character.characterIsFalling() && !this.character.isHurt(this.character.immortalDuration) && this.character.isColliding(enemy)) {
+                enemy.hit(this.character.charDmg);
+                setTimeout(() => {
+                    this.level.enemies.splice(this.level.enemies.indexOf(enemy), 1);
+                }, 500);
             }
         });
-    }
-
-
-    // checkChickenCollision() {
-    //     this.level.enemies.forEach((enemy) => {
-    //         if (this.throwableObjects.isColliding(enemy)) {
-    //             enemy.energy == 0;
-    //             console.log(enemy.energy);
-    //         }
-    //     });
-    // }
+    };
 
 
     draw() {
@@ -130,11 +174,13 @@ class World {
         this.addObjectToMap(this.level.clouds);
         this.addObjectToMap(this.throwableObjects);
         this.addObjectToMap(this.level.enemies);
+        this.addToMap(this.level.endboss);
 
         this.ctx.translate(-this.camera_x, 0); //Back
         // ----- space for fixed objects ------
         this.addToMap(this.statusBarBottle);
         this.addToMap(this.statusBarHealth);
+        this.addToMap(this.statusBarHealthBoss);
         this.addToMap(this.statusBarCoin);
         this.ctx.translate(this.camera_x, 0); //Forwards
 
@@ -150,14 +196,14 @@ class World {
         requestAnimationFrame(function() {
             self.draw();
         });
-    }
+    };
 
     //array objects or single object which we add to world like chicken, character etc
     addObjectToMap(object) {
         object.forEach(o => {
             this.addToMap(o);
         });
-    }
+    };
 
     //mo movableobject
     addToMap(mo) {

@@ -1,5 +1,6 @@
 class ThrowableObject extends MovableObject {
-
+    bottleHit = false;
+    bottleDamage = 20;
 
     IMAGES_SPLASH = [
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png',
@@ -38,9 +39,8 @@ class ThrowableObject extends MovableObject {
             this.applyGravity();
             let interval1 = setInterval(() => {
                 this.x += 10;
-                if (this.y >= 380) {
+                if (this.y >= 450) {
                     clearInterval(interval1);
-                    this.loadImage('img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png');
                 }
             }, 25);
             //THROW LEFT IF CHAR LOOKS LEFT SIDE - OD TRUE
@@ -49,8 +49,7 @@ class ThrowableObject extends MovableObject {
             this.applyGravity();
             let interval2 = setInterval(() => {
                 this.x -= 10;
-                if (this.y >= 380) {
-                    this.loadImage('img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png');
+                if (this.y >= 450) {
                     clearInterval(interval2);
                 }
             }, 25);
@@ -63,7 +62,12 @@ class ThrowableObject extends MovableObject {
     animte() {
         setInterval(() => {
 
-            this.playAnimation(this.IMAGES_ROTATION);
+            if (!this.bottleHit) {
+                this.playAnimation(this.IMAGES_ROTATION);
+
+            } else if (this.bottleHit) {
+                this.playAnimation(this.IMAGES_SPLASH);
+            }
 
         }, 50);
     }
