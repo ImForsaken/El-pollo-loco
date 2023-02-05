@@ -19,7 +19,7 @@ class Endboss extends MovableObject {
         right: 0,
         bottom: 0
     };
-    immortalDuration = 1;
+    immortalDuration = 1.4;
 
     IMAGES_WALKING = [
         'img/4_enemie_boss_chicken/1_walk/G1.png',
@@ -104,7 +104,7 @@ class Endboss extends MovableObject {
                 }
             } else if (this.isAttacking && !this.isHurt(this.immortalDuration)) {
                 this.playAnimation(this.IMAGES_ATTACK);
-            } else if (!this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration)) {
+            } else if (!this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration) && !this.isAttacking) {
                 this.playAnimation(this.IMAGES_WALKING);
             } else if (this.isHurt(this.immortalDuration) && !this.isDead()) {
                 this.playAnimation(this.IMAGES_HURT);

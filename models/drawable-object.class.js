@@ -57,6 +57,7 @@ class DrawableObject {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     };
 
+
     //setPercentage(100);
     setPercentage(percentage) {
         this.percentage = percentage; // => 0....5

@@ -9,6 +9,7 @@ class Character extends MovableObject {
     world;
     speed = 5;
     immortalDuration = 1.5;
+    cameraSpeed = 5;
     walking_sound = new Audio('audio/standardWalking.mp3');
     offset = {
         top: 80,
@@ -62,7 +63,7 @@ class Character extends MovableObject {
     //in constructor we load the functions we want the object to start instanly with. Animate makes the character acessable to animation
     constructor() {
         super();
-        this.loadImage('img/2_character_pepe/2_walk/W-21.png');
+        this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
@@ -80,17 +81,26 @@ class Character extends MovableObject {
                 this.moveRight();
                 this.otherDirection = false;
                 this.walking_sound.play();
+                if (this.world.camera_x == -this.x + 120 + 5) {
+
+                    this.world.camera_x = -this.x + 120;
+                }
                 // console.log(-this.x + 120)
-                this.world.camera_x = -this.x + 120;
+                // this.world.camera_x = -this.x + 120;
+                // console.log('camera right walk = ', world.camera_x, 'calculated pos', -this.x + 120)
 
             }
             if (this.world.keyboard.LEFT && this.x > -100 && this.energy > 0) {
                 this.moveLeft(this.speed);
                 this.walking_sound.play();
                 this.otherDirection = true;
-                // console.log(-this.x + 120)
+                if (this.world.camera_x == (-this.x + 500) - 5) {
+                    this.world.camera_x = -this.x + 500;
+                }
                 // console.log(-this.x + 500)
-                this.world.camera_x = -this.x + 500;
+                // this.world.camera_x = -this.x + 500;
+                // console.log('camera left walk position = ', world.camera_x, 'calculated pos', -this.x + 500)
+
                 //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
                 //this.world.camera_x = -this.x + 100;
             }
@@ -100,7 +110,19 @@ class Character extends MovableObject {
 
 
             //focus camera on character and changes the starting point of him
-        }, 1000 / 60);
+        }, 1000 / 65);
+
+
+        setInterval(() => {
+            if (!this.otherDirection && this.world.camera_x > (-this.x + 120)) {
+                this.smoothCamera(+this.cameraSpeed);
+            }
+
+            if (this.otherDirection && this.world.camera_x < (-this.x + 500)) {
+                this.smoothCamera(-this.cameraSpeed);
+            }
+
+        }, 5);
 
 
         //makes sound reset after stop pressing a key to run with the Character
@@ -125,7 +147,7 @@ class Character extends MovableObject {
             } else if (!this.isDead()) {
                 this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
             }
-        }, 250);
+        }, 220);
 
 
         setInterval(() => {
@@ -138,18 +160,34 @@ class Character extends MovableObject {
         }, 350);
 
 
+
+
+
+        // setInterval(() => {
+        //     if (this.otherDirection && this.world.camera_x < (-this.x + 500) && !this.camLock) {
+        //         console.log('adding camera', this.world.camera_x, (-this.x + 500) - 5);
+        //         this.smoothCamera(-this.cameraSpeed);
+        //     } else if (this.world.camera_x == (-this.x + 500) && this.otherDirection) {
+        //         console.log('works', this.world.camera_x)
+        //         this.world.camera_x = (-this.x + 500);
+        //         console.log('calc', this.world.camera_x, -this.x + 500)
+
+        //     }
+
+
+
+        //     else if (this.world.camera_x >= (-this.x + 120) && !this.otherDirection) {
+        //         this.smoothCamera(+this.cameraSpeed);
+        //     }
+        // }, 5);
+
+
     };
 
 
 
-    smoothCamera() {
-        if (this.otherDirection && this.world.camera_x > 0) {
-            console.log('works')
-            this.world.camera_x = -this.x + 5;
-
-        } else if (!this.otherDirection && this.world.camera_x < 0) {
-            this.world.camera_x += 10;
-        }
+    smoothCamera(speed) {
+        this.world.camera_x -= speed;
     }
 
 

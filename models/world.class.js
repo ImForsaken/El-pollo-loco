@@ -4,12 +4,13 @@ class World {
     canvas;
     ctx;
     keyboard;
-    camera_x;
+    camera_x = 0;
     statusBarHealth = new StatusbarHealth();
     statusBarHealthBoss = new StatusbarHealthBoss();
     statusBarCoin = new StatusbarCoin();
     statusBarBottle = new StatusbarBottle();
     throwableObjects = [];
+    bottleInInventory = [];
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -21,6 +22,8 @@ class World {
         this.run2();
         this.run3();
         this.run4();
+        this.run5();
+        console.log(this.camera_x)
     }
 
     //makes it possible for character object to access the variables of the world class object like keyboard
@@ -65,30 +68,37 @@ class World {
         }, 50);
     }
 
+    run5() {
+        setInterval(() => {
+            this.checkBottlePickUp();
+        }, 300);
+    }
 
 
     checkIfBossIsInVision() {
         if (this.character.x >= 250 && !this.level.endboss.denyCheck) {
-            console.log('IN VISION')
+            // console.log('IN VISION')
             this.level.endboss.inVision = true;
         }
         if (!this.level.endboss.isDead() && (this.character.x + (this.character.width / 2)) < this.level.endboss.x + (this.level.endboss.width / 2) - 500 && this.level.endboss.bossRageStart) {
-            console.log('Boss runs left', this.level.endboss.x + (this.level.endboss.width / 2))
+            // console.log('Boss runs left', this.level.endboss.x + (this.level.endboss.width / 2))
             this.level.endboss.otherDirection = false;
 
         } else if (!this.level.endboss.isDead() && this.character.x + (this.character.width / 2) > this.level.endboss.x + (this.level.endboss.width / 2) + 500 && this.level.endboss.bossRageStart) {
-            console.log('Boss runs right', this.level.endboss.x + (this.level.endboss.width / 2))
+            // console.log('Boss runs right', this.level.endboss.x + (this.level.endboss.width / 2))
             this.level.endboss.otherDirection = true;
         }
     }
 
     //TODO THIS:CHARACTER MAYBE DELETE AS PAREMTER SAME FOR THROWABLE CLASS
     checkThrowObjects() {
-        if (this.keyboard.D && !this.character.otherDirection && !this.character.isDead()) {
+        if (this.keyboard.D && !this.character.otherDirection && !this.character.isDead() && this.bottleInInventory.length > 0) {
             let bottle = new ThrowableObject(this.character.x + 50, this.character.y + 100, this.character.otherDirection);
+            this.bottleInInventory.splice(0, 1);
             this.throwableObjects.push(bottle);
-        } else if (this.keyboard.D && this.character.otherDirection && !this.character.isDead()) {
+        } else if (this.keyboard.D && this.character.otherDirection && !this.character.isDead() && this.bottleInInventory.length > 0) {
             let bottle = new ThrowableObject(this.character.x - 10, this.character.y + 100, this.character.otherDirection);
+            this.bottleInInventory.splice(0, 1);
             this.throwableObjects.push(bottle);
         }
         // if (this.throwableObjects.length > 0) {
@@ -100,6 +110,22 @@ class World {
         //     });
         // }
     }
+
+
+    checkBottlePickUp() {
+        this.level.bottles.forEach(bottle => {
+            if (this.character.isColliding(bottle)) {
+                console.log('bottle colliding')
+                let pickedUpBottle = new ThrowableObject(this.character.x + 50, this.character.y + 100, this.character.otherDirection);
+                this.bottleInInventory.push(pickedUpBottle);
+                console.log(this.bottleInInventory);
+                this.level.bottles.splice(this.level.bottles.indexOf(bottle), 1);
+            }
+        })
+
+
+    }
+
 
     checkBottleCollision() {
         this.throwableObjects.forEach((bottle) => {
@@ -131,6 +157,7 @@ class World {
 
 
 
+
     //checks if character gets dmg from chicken
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
@@ -140,11 +167,11 @@ class World {
             }
         });
         //checks if character collides with endboss
-        if (!this.character.isHurt(this.character.immortalDuration) && this.level.endboss.energy > 0 && this.character.isCollidingHorizontal(this.level.endboss)) {
-            this.character.hit(this.level.endboss.endbossDamage);
-            this.statusBarHealth.setPercentage(this.character.energy);
+        if (!this.character.isHurt(this.character.immortalDuration) && this.level.endboss.energy > 0 && this.character.isCollidingHorizontal(this.level.endboss) && !this.character.isDead()) {
             this.level.endboss.isAttacking = true;
-        } else {
+            // this.character.hit(this.level.endboss.endbossDamage);
+            // this.statusBarHealth.setPercentage(this.character.energy);
+        } else if (!this.character.isHurt(this.character.immortalDuration)) {
             this.level.endboss.isAttacking = false;
         }
     };
@@ -172,9 +199,11 @@ class World {
 
 
         this.addObjectToMap(this.level.clouds);
+        this.addObjectToMap(this.level.bottles);
         this.addObjectToMap(this.throwableObjects);
         this.addObjectToMap(this.level.enemies);
-        this.addToMap(this.level.endboss);
+        this.addObjectToMap(this.level.enemies);
+        // this.addToMap(this.level.endboss);
 
         this.ctx.translate(-this.camera_x, 0); //Back
         // ----- space for fixed objects ------
