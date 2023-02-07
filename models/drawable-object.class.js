@@ -8,23 +8,26 @@ class DrawableObject {
     width = 100
     deadLoop = 0;
     alertLoop = 0;
+    gameStart = true;
+    gameEnd = false;
+    gamePaused = false;
 
 
 
     //only draws a border/frame around the object if its an instance of Chicken or Character
     drawFrameAroundObject(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject || this instanceof Bottle || this instanceof Coin || this instanceof smallChicken) {
             ctx.beginPath();
             ctx.lineWidth = '1';
             ctx.strokeStyle = 'blue';
             ctx.rect(this.x, this.y, this.width, this.height);
             ctx.stroke();
         }
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObject || this instanceof Bottle || this instanceof Coin || this instanceof smallChicken) {
             ctx.beginPath();
             ctx.lineWidth = '1';
             ctx.strokeStyle = 'red';
-            ctx.rect(this.x + this.offset.left, this.y + this.offset.top, (this.width - this.offset.left) - this.offset.right, this.height - this.offset.top);
+            ctx.rect(this.x + this.offset.left, this.y + this.offset.top, (this.width - this.offset.left) - this.offset.right, this.height - this.offset.top - this.offset.bottom);
             ctx.stroke();
         }
     }

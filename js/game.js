@@ -1,12 +1,33 @@
 let canvas;
 let world;
-let keyboard = new Keyboard();
+let keyboard;
 
 function init() {
     canvas = document.getElementById('canvas');
+    initLevel();
+    keyboard = new Keyboard();
     world = new World(canvas, keyboard);
+    document.getElementById('startButton').style.display = "none";
+    document.getElementById('gameIntro').style.display = "none";
+    document.getElementById('gameInfo').style.display = "none";
+}
 
-    console.log('My Character is ', world.character);
+
+function showInfo() {
+    const gameInfo = document.getElementById('gameInfo');
+    if (gameInfo.style.display === '' || gameInfo.style.display === 'none') {
+        gameInfo.style.display = 'block';
+        if (world) {
+            world.pause();
+            console.log('game paused')
+        }
+    } else {
+        gameInfo.style.display = 'none';
+        if (world) {
+            world.start();
+            console.log('game started')
+        }
+    }
 }
 
 

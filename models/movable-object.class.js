@@ -8,6 +8,7 @@ class MovableObject extends DrawableObject {
     otherDirection = false;
     energy = 100;
     lastHit = 0;
+    lastKeyPress;
     intervalID;
     isDamaged = false;
     immortalDuration = 0;
@@ -20,6 +21,7 @@ class MovableObject extends DrawableObject {
         right: 0,
         bottom: 0
     };
+
 
     //make pepe fall
     applyGravity() {
@@ -40,7 +42,7 @@ class MovableObject extends DrawableObject {
 
     characterIsFalling() {
         return this.speedY < 0;
-    }
+    };
 
 
     isAboveGround() {
@@ -52,12 +54,15 @@ class MovableObject extends DrawableObject {
     };
 
 
-
-
-
-    onTheGround() {
-        return this.y >= 180
+    isAboveNormalChicken() {
+        return this.y + this.height - this.offset.bottom <= 340
     };
+
+
+    isAboveSmallChicken() {
+        return this.y + this.height - this.offset.bottom <= 360;
+    };
+
 
     //TODO new variablen declaration for better syntax
 
@@ -72,6 +77,7 @@ class MovableObject extends DrawableObject {
     isCollidingHorizontal(mo) {
         return this.charRightCollideMoLeft(mo) && this.charLeftCollideMoRight(mo);
     };
+
 
     isCollidingVerticaly(mo) {
         return this.charBottomCollideMoTop(mo) && this.charTopCollideWithMoBottom(mo);
@@ -128,27 +134,27 @@ class MovableObject extends DrawableObject {
 
     isLeftSideChar() {
         return this.x + this.offset.left;
-    }
+    };
 
 
     rightSideFrom(mo) {
         return mo.x + mo.width - mo.offset.right;
-    }
+    };
 
 
     charTopCollideWithMoBottom(mo) {
         return this.isTopSideChar() < this.bottomSideFrom(mo);
-    }
+    };
 
 
     isTopSideChar() {
         return this.y + this.offset.top;
-    }
+    };
 
 
     bottomSideFrom(mo) {
         return mo.y + mo.height - mo.offset.bottom;
-    }
+    };
 
 
     hit(dmg) {
@@ -159,21 +165,35 @@ class MovableObject extends DrawableObject {
         } else {
             this.lastHit = new Date().getTime();
         }
-    }
+    };
+
 
     //checks if character is hurt starting by 0secs if character is colliding prob make a booleon to make animation appear only once
     isHurt(immortalDuration) {
         let timepassed = new Date().getTime() - this.lastHit; // difference in ms
         timepassed = timepassed / 1000; // difference in seconds
         return timepassed < immortalDuration;
-    }
+    };
 
+
+    characterStartIdling(idleTime) {
+        let timepassed = new Date().getTime() - this.lastKeyPress; // difference in ms
+        timepassed = timepassed / 1000; // difference in seconds
+        return timepassed > idleTime;
+    };
+
+
+    characterStartLongIdling(idleTime) {
+        let timepassed = new Date().getTime() - this.lastKeyPress; // difference in ms
+        timepassed = timepassed / 1000; // difference in seconds
+        return timepassed > idleTime;
+    };
 
 
 
     isDead() {
         return this.energy == 0;
-    }
+    };
 
 
     playAnimation(images) {
@@ -195,11 +215,36 @@ class MovableObject extends DrawableObject {
 
     moveLeft(speed) {
         //walk to left position by decreasing x by speed
-        this.x -= speed;
+        if (!world.gamePaused) {
+            this.x -= speed;
+        }
     };
 
 
     jump() {
         this.speedY = 30;
     };
+
+
+    animateChicken(speed, imagesWalking, ImageDead) {
+        setInterval(() => {
+            if (!world.gamePaused && !this.isDead()) {
+                this.moveLeft(speed);
+            }
+        }, 1000 / 60);
+
+        setInterval(() => {
+            if (!this.speed == 0 && !world.gamePaused && !this.isDead())
+                this.playAnimation(imagesWalking);
+        }, 200);
+
+
+        setInterval(() => {
+            if (this.isDead() && !world.gamePaused) {
+                this.speed = 0;
+                this.loadImage(ImageDead);
+            }
+        }, 50);
+
+    }
 }

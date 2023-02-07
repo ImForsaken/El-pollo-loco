@@ -1,10 +1,6 @@
 AUFGABEN
 
 
-1 coins einsammeln
-2 flaschen einsammeln
-3 Flaschen nur werfen wenn vorhanden
-4 collision
 5 endgegner besiegen
 6 Game-over screen
 7 fullscreen

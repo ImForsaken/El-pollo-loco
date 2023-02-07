@@ -11,7 +11,7 @@ class Endboss extends MovableObject {
     isAttacking = false;
     denyCheck = false;
     y = 90;
-    x = 800;
+    x = 2500;
     speed = 0.6
     offset = {
         top: 0,
@@ -92,7 +92,7 @@ class Endboss extends MovableObject {
 
 
         setInterval(() => {
-            if (this.inVision) {
+            if (!world.gamePaused && this.inVision) {
                 if (this.alertLoop <= (this.IMAGES_ALERT.length - 1)) {
                     this.loadImage(this.IMAGES_ALERT[this.alertLoop]);
                     this.alertLoop += 1;
@@ -102,13 +102,13 @@ class Endboss extends MovableObject {
                     this.inVision = false;
                     this.denyCheck = true;
                 }
-            } else if (this.isAttacking && !this.isHurt(this.immortalDuration)) {
+            } else if (!world.gamePaused && this.isAttacking && !this.isHurt(this.immortalDuration)) {
                 this.playAnimation(this.IMAGES_ATTACK);
-            } else if (!this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration) && !this.isAttacking) {
+            } else if (!world.gamePaused && !this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration) && !this.isAttacking) {
                 this.playAnimation(this.IMAGES_WALKING);
-            } else if (this.isHurt(this.immortalDuration) && !this.isDead()) {
+            } else if (!world.gamePaused && this.isHurt(this.immortalDuration) && !this.isDead()) {
                 this.playAnimation(this.IMAGES_HURT);
-            } else if (this.isDead()) {
+            } else if (!world.gamePaused && this.isDead()) {
                 if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
                     this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
                     this.deadLoop += 1;
@@ -134,9 +134,9 @@ class Endboss extends MovableObject {
 
 
     endbossAttack() {
-        if (this.bossRageStart && !this.isHurt(this.immortalDuration) && !this.otherDirection && !this.isDead()) {
+        if (!world.gamePaused && this.bossRageStart && !this.isHurt(this.immortalDuration) && !this.otherDirection && !this.isDead()) {
             this.bosscharge(this.chargeSpeed);
-        } else if (this.bossRageStart && !this.isHurt(this.immortalDuration) && this.otherDirection && !this.isDead()) {
+        } else if (!world.gamePaused && this.bossRageStart && !this.isHurt(this.immortalDuration) && this.otherDirection && !this.isDead()) {
             this.bosscharge(-this.chargeSpeed);
         }
     }

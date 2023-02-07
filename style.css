@@ -1,7 +1,101 @@
+* {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.d-none {
+    display: none;
+}
+
 body {
+    background-image: url("img/9_intro_outro_screens/elPolloLocoBgr.jpg");
+}
+
+.gameBox {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+}
+
+.gameScreen {
+    height: 480px;
+    width: 720px;
+    position: relative;
+}
+
+.gameIntro {
+    position: absolute;
+    height: 480px;
+    width: 720px;
+}
+
+.gameInfo {
+    display: none;
+    position: absolute;
+    height: 480px;
+    width: 720px;
+    background-image: url("img/9_intro_outro_screens/infoWallpaper.jpg");
+}
+
+.infoBox {
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
     display: flex;
     flex-direction: column;
+    gap: 5%;
+}
+
+.infoLine {
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+}
+
+.explainButton {
+    height: 50px;
+    width: 50px;
+}
+
+.startButton {
+    background-color: rgb(221 221 52);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.startButton:hover {
+    background-color: rgb(255 251 22);
+    scale: 1.05;
+    cursor: pointer;
+}
+
+.infoButton {
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    right: 0;
+    background: url('img/9_intro_outro_screens/infoButton.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    border: none;
+}
+
+.infoButton:hover {
+    scale: 1.05;
+    color: #3164A3;
+    cursor: pointer;
 }
 
 canvas {
