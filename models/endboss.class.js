@@ -3,7 +3,6 @@ class Endboss extends MovableObject {
     width = 300;
     energy = 100;
     chargeSpeed = 50;
-    endbossDamage = 20;
     inVision = false;
     bossRageStart = false;
     chargeLeft = false;
@@ -102,7 +101,7 @@ class Endboss extends MovableObject {
                     this.inVision = false;
                     this.denyCheck = true;
                 }
-            } else if (!world.gamePaused && this.isAttacking && !this.isHurt(this.immortalDuration)) {
+            } else if (!world.gamePaused && this.isAttacking && !this.isHurt(this.immortalDuration) && !this.isDead()) {
                 this.playAnimation(this.IMAGES_ATTACK);
             } else if (!world.gamePaused && !this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration) && !this.isAttacking) {
                 this.playAnimation(this.IMAGES_WALKING);
@@ -125,8 +124,6 @@ class Endboss extends MovableObject {
         //         }
         //     }
         // }, 350);
-
-
 
 
     };

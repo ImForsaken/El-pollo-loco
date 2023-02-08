@@ -14,6 +14,7 @@ class MovableObject extends DrawableObject {
     immortalDuration = 0;
     lastY = 0;
     isAlreadyDead = false;
+    chickenDamage = 20;
 
     offset = {
         top: 0,
@@ -26,19 +27,26 @@ class MovableObject extends DrawableObject {
     //make pepe fall
     applyGravity() {
         setInterval(() => {
-            if (this.isAboveGround() || this.speedY > 0) {
-                // -= negatives the Number which makes y get higher since speedY is a negative number and gets converted to add because we -= y by speedY
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
-                this.lastY = this.y;
-                // console.log(this.y)
-                if (!this.isAboveGround()) {
-                    this.speedY = 0;
-                }
+            if (!world.gamePaused && this.isAboveGround() || this.speedY > 0) {
+                this.characterJumpAndFalls();
+                this.checkIfCharLandsOnGround();
             }
         }, 1000 / 25);
     };
 
+    characterJumpAndFalls() {
+        // -= negatives the Number which makes y get higher since speedY is a negative number and gets converted to add because we -= y by speedY
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
+        this.lastY = this.y;
+    }
+
+
+    checkIfCharLandsOnGround() {
+        if (!this.isAboveGround()) {
+            this.speedY = 0;
+        }
+    }
 
     characterIsFalling() {
         return this.speedY < 0;
@@ -73,6 +81,7 @@ class MovableObject extends DrawableObject {
             this.charTopCollideWithMoBottom(mo);
     };
 
+    //Colliding functions seperated for better syntax
 
     isCollidingHorizontal(mo) {
         return this.charRightCollideMoLeft(mo) && this.charLeftCollideMoRight(mo);
@@ -82,19 +91,6 @@ class MovableObject extends DrawableObject {
     isCollidingVerticaly(mo) {
         return this.charBottomCollideMoTop(mo) && this.charTopCollideWithMoBottom(mo);
     };
-
-    //original colliding Function
-    // isColliding2(mo) {
-    //     return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
-    //         this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
-    //         this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
-    //         this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
-    // }
-
-
-
-
-    //Colliding functions seperated for better syntax
 
 
     charRightCollideMoLeft(mo) {
@@ -197,7 +193,6 @@ class MovableObject extends DrawableObject {
 
 
     playAnimation(images) {
-
         let i = this.currentImage % images.length; // let i = 0 % 6; => 0, Rest 0
         // i = 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0
         let path = images[i];
@@ -222,29 +217,42 @@ class MovableObject extends DrawableObject {
 
 
     jump() {
-        this.speedY = 30;
+        if (!world.gamePaused) {
+            this.speedY = 30;
+        }
     };
 
 
     animateChicken(speed, imagesWalking, ImageDead) {
+        this.moveChickenToLeft(speed);
+        this.playChickenMove(imagesWalking);
+        this.playChickenDead(ImageDead)
+    }
+
+
+
+    moveChickenToLeft(speed) {
         setInterval(() => {
             if (!world.gamePaused && !this.isDead()) {
                 this.moveLeft(speed);
             }
         }, 1000 / 60);
+    }
 
+    playChickenMove(imagesWalking) {
         setInterval(() => {
             if (!this.speed == 0 && !world.gamePaused && !this.isDead())
                 this.playAnimation(imagesWalking);
         }, 200);
+    }
 
-
+    playChickenDead(ImageDead) {
         setInterval(() => {
             if (this.isDead() && !world.gamePaused) {
                 this.speed = 0;
                 this.loadImage(ImageDead);
             }
         }, 50);
-
     }
+
 }

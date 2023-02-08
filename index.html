@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fonts.css">
     <script src="models/drawable-object.class.js"></script>
     <script src="models/movable-object.class.js"></script>
     <script src="models/character.class.js"></script>
@@ -26,13 +27,15 @@
     <script src="models/throwableObject.class.js"></script>
     <script src="models/endboss.class.js"></script>
     <script src="levels/level1.js"></script>
-    <script src="js/game.js"></script>
 </head>
 
 <body>
-    <div class="gameBox">
-        <div class="gameScreen">
-            <img src="img/9_intro_outro_screens/start/startscreen_2.png" alt="gameIntro" class="gameIntro" id="gameIntro">
+    <div class="gameBox" id="gameBox">
+        <div class="gameScreen" id="gameScreen">
+            <img src="img/9_intro_outro_screens/start/startscreen_2.png" alt="gameIntro" class="gameIntro"
+                id="gameIntro">
+            <img src="img/9_intro_outro_screens/game_over/game over.png" alt="gameOutro" class="gameOutro"
+                id="gameOutro">
             <div alt="gameInfo" class="gameInfo" id="gameInfo">
                 <div class="infoBox" id="infoBox">
                     <div class="infoLine">
@@ -55,18 +58,31 @@
                         <span>Press D button to Throw bottle</span>
                         <img src="img/9_intro_outro_screens/dButton.png" alt="spaceButton" class="explainButton">
                     </div>
+                    <div class="infoLine">
+                        <span>Play and Pause the Game</span>
+                        <div>
+                            <img src="img/9_intro_outro_screens/playButton.png" alt="playButton" class="explainButton">
+                            <img src="img/9_intro_outro_screens/pauseButton.png" alt="playButton" class="explainButton">
+                        </div>
+                    </div>
                 </div>
-                <div>
+                <div class="infoText">
                     <span>Collect Coins to Heal your Character after he got Damage</span>
                     <span>Throw Bottles to defeat Enemys but take care! There are not unlimited bottles!</span>
+                    <span>Boss can only be defeated with bottles!</span>
                 </div>
             </div>
             <button onclick="showInfo()" class="infoButton" id="infoButton"></button>
+            <img onclick="pausePlaygame()" class="pausePlayButton" id="pausePlayButton"
+                src="img/9_intro_outro_screens/pauseButton.png">
+            <img onclick="fullscreenMode()" class="fullscreenButton" id="fullscreenButton"
+                src="img/9_intro_outro_screens/joinFullscreen.png">
             <canvas id="canvas" width="720px" height="480px">
             </canvas>
         </div>
         <button onclick="init()" class="startButton" id="startButton">Click to Start game</button>
     </div>
+    <script src="js/game.js"></script>
 
 </body>
 

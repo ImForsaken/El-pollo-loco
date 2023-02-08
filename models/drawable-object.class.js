@@ -8,9 +8,7 @@ class DrawableObject {
     width = 100
     deadLoop = 0;
     alertLoop = 0;
-    gameStart = true;
-    gameEnd = false;
-    gamePaused = false;
+
 
 
 

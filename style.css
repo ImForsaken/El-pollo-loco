@@ -1,6 +1,6 @@
 * {
     margin: 0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'chango';
     box-sizing: border-box;
     padding: 0;
 }
@@ -27,12 +27,31 @@ body {
     height: 480px;
     width: 720px;
     position: relative;
+    overflow: hidden;
 }
 
 .gameIntro {
     position: absolute;
     height: 480px;
     width: 720px;
+}
+
+.gameOutro {
+    display: none;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    animation: outroZoomIn 1s;
+}
+
+@keyframes outroZoomIn {
+    0% {
+        transform: scale(8);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .gameInfo {
@@ -47,18 +66,26 @@ body {
     height: 100%;
     width: 100%;
     padding: 20px;
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 16px;
     display: flex;
     flex-direction: column;
     gap: 5%;
 }
 
 .infoLine {
-    width: 70%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.infoText {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    justify-content: center;
+    padding: 10px;
+    gap: 50px;
+    border-left: black 2px solid;
 }
 
 .explainButton {
@@ -69,9 +96,9 @@ body {
 .startButton {
     background-color: rgb(221 221 52);
     border-radius: 10px;
+    margin-top: 5px;
     padding: 10px;
-    font-size: 25px;
-    font-weight: bold;
+    font-size: 18px;
 }
 
 .startButton:hover {
@@ -98,6 +125,36 @@ body {
     cursor: pointer;
 }
 
+.pausePlayButton {
+    display: none;
+    position: absolute;
+    height: 45px;
+    width: 45px;
+    right: 2px;
+    top: 50px;
+}
+
+.pausePlayButton:hover {
+    scale: 1.05;
+    cursor: pointer;
+}
+
+.fullscreenButton {
+    display: none;
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    bottom: 0;
+    right: 0;
+}
+
+.fullscreenButton:hover {
+    scale: 1.05;
+    cursor: pointer;
+}
+
 canvas {
+    height: 100%;
+    width: 100%;
     background-color: black;
 }

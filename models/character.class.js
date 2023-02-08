@@ -111,34 +111,34 @@ class Character extends MovableObject {
         //checks 60times per second which key has been pressed by checking the keyboard direction variables
         setInterval(() => {
 
-            if (!world.gamePaused && this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x && this.energy > 0) {
+            if (!world.gamePaused && keyboard.RIGHT && this.x < world.level.level_end_x && this.energy > 0) {
                 this.moveRight();
                 this.otherDirection = false;
                 this.walking_sound.play();
-                if (this.world.camera_x == -this.x + 120 + 5) {
+                if (world.camera_x == -this.x + 120 + 5) {
 
-                    this.world.camera_x = -this.x + 120;
+                    world.camera_x = -this.x + 120;
                 }
                 // console.log(-this.x + 120)
-                // this.world.camera_x = -this.x + 120;
+                // world.camera_x = -this.x + 120;
                 // console.log('camera right walk = ', world.camera_x, 'calculated pos', -this.x + 120)
 
             }
-            if (!world.gamePaused && this.world.keyboard.LEFT && this.x > -100 && this.energy > 0) {
+            if (!world.gamePaused && keyboard.LEFT && this.x > -100 && this.energy > 0) {
                 this.moveLeft(this.speed);
                 this.walking_sound.play();
                 this.otherDirection = true;
-                if (this.world.camera_x == (-this.x + 500) - 5) {
-                    this.world.camera_x = -this.x + 500;
+                if (world.camera_x == (-this.x + 500) - 5) {
+                    world.camera_x = -this.x + 500;
                 }
                 // console.log(-this.x + 500)
-                // this.world.camera_x = -this.x + 500;
+                // world.camera_x = -this.x + 500;
                 // console.log('camera left walk position = ', world.camera_x, 'calculated pos', -this.x + 500)
 
                 //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
-                //this.world.camera_x = -this.x + 100;
+                //world.camera_x = -this.x + 100;
             }
-            if (!world.gamePaused && this.world.keyboard.SPACE && !this.isAboveGround() && this.energy > 0) {
+            if (!world.gamePaused && keyboard.SPACE && !this.isAboveGround() && this.energy > 0) {
                 this.jump();
             }
 
@@ -148,11 +148,11 @@ class Character extends MovableObject {
 
 
         setInterval(() => {
-            if (!this.otherDirection && this.world.camera_x > (-this.x + 120)) {
+            if (!this.otherDirection && world.camera_x > (-this.x + 120)) {
                 this.smoothCamera(+this.cameraSpeed);
             }
 
-            if (this.otherDirection && this.world.camera_x < (-this.x + 500)) {
+            if (this.otherDirection && world.camera_x < (-this.x + 500)) {
                 this.smoothCamera(-this.cameraSpeed);
             }
 
@@ -161,7 +161,7 @@ class Character extends MovableObject {
 
         //makes sound reset after stop pressing a key to run with the Character
         setInterval(() => {
-            if (!this.world.keyboard.RIGHT && !this.world.keyboard.LEFT) {
+            if (!keyboard.RIGHT && !keyboard.LEFT) {
                 this.walking_sound.pause();
                 this.walking_sound.currentTime = 0.5;
             }
@@ -175,7 +175,7 @@ class Character extends MovableObject {
             } else if (!world.gamePaused && this.isAboveGround() && !this.isDead()) {
                 // console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y))
                 this.playAnimation(this.IMAGES_JUMPING);
-            } else if (!world.gamePaused && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.energy > 0 && !this.isDead()) {
+            } else if (!world.gamePaused && (keyboard.RIGHT || keyboard.LEFT) && this.energy > 0 && !this.isDead()) {
                 //Walk animation
                 this.playAnimation(this.IMAGES_WALKING);
             } else if (!world.gamePaused && this.characterStartLongIdling(this.longIdle) && this.lastKeyPress > 0 && !this.isDead()) {
@@ -204,19 +204,19 @@ class Character extends MovableObject {
 
 
         // setInterval(() => {
-        //     if (this.otherDirection && this.world.camera_x < (-this.x + 500) && !this.camLock) {
-        //         console.log('adding camera', this.world.camera_x, (-this.x + 500) - 5);
+        //     if (this.otherDirection && world.camera_x < (-this.x + 500) && !this.camLock) {
+        //         console.log('adding camera', world.camera_x, (-this.x + 500) - 5);
         //         this.smoothCamera(-this.cameraSpeed);
-        //     } else if (this.world.camera_x == (-this.x + 500) && this.otherDirection) {
-        //         console.log('works', this.world.camera_x)
-        //         this.world.camera_x = (-this.x + 500);
-        //         console.log('calc', this.world.camera_x, -this.x + 500)
+        //     } else if (world.camera_x == (-this.x + 500) && this.otherDirection) {
+        //         console.log('works', world.camera_x)
+        //         world.camera_x = (-this.x + 500);
+        //         console.log('calc', world.camera_x, -this.x + 500)
 
         //     }
 
 
 
-        //     else if (this.world.camera_x >= (-this.x + 120) && !this.otherDirection) {
+        //     else if (world.camera_x >= (-this.x + 120) && !this.otherDirection) {
         //         this.smoothCamera(+this.cameraSpeed);
         //     }
         // }, 5);
@@ -227,7 +227,7 @@ class Character extends MovableObject {
 
 
     smoothCamera(speed) {
-        this.world.camera_x -= speed;
+        world.camera_x -= speed;
     };
 
 }

@@ -7,7 +7,7 @@ class Level {
     statusbar;
     coins;
     bottles;
-    level_end_x = 2200;
+    level_end_x = 2800;
 
     constructor(normalChicken, smallChicken, endboss, coins, bottles, clouds, backgroundObjects, statusbar) {
         this.normalChicken = normalChicken;

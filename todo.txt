@@ -1,9 +1,5 @@
 AUFGABEN
 
 
-5 endgegner besiegen
-6 Game-over screen
-7 fullscreen
 8 erklärung der Tasten
-9 Start screen
 10 Musik + sounds
