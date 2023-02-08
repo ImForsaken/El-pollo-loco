@@ -11,12 +11,14 @@ class ThrowableObject extends MovableObject {
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png',
     ];
 
+
     IMAGES_ROTATION = [
         'img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png',
     ];
+
 
     constructor(x, y, otherDirection) {
         super();
@@ -32,45 +34,70 @@ class ThrowableObject extends MovableObject {
         this.animte();
     }
 
+
     throw () {
-        //THROW RIGHT IF CHAR LOOKS RIGHT SIDE  - OD FALSE
-        if (!this.otherDirection) {
-            this.speedY = 30;
-            this.applyGravity();
-            let interval1 = setInterval(() => {
-                this.x += 10;
-                if (this.y >= 450) {
-                    clearInterval(interval1);
-                }
-            }, 25);
-            //THROW LEFT IF CHAR LOOKS LEFT SIDE - OD TRUE
-        } else if (this.otherDirection) {
-            this.speedY = 30;
-            this.applyGravity();
-            let interval2 = setInterval(() => {
-                this.x -= 10;
-                if (this.y >= 450) {
-                    clearInterval(interval2);
-                }
-            }, 25);
-        }
-
+        //THROW RIGHT IF CHAR LOOKS RIGHT SIDE  - OR Not
+        this.throwToRight();
+        this.throwToLeft();
     }
-
 
 
     animte() {
         setInterval(() => {
-
-            if (!this.bottleHit) {
-                this.playAnimation(this.IMAGES_ROTATION);
-
-            } else if (this.bottleHit) {
-                this.playAnimation(this.IMAGES_SPLASH);
-            }
-
+            this.playRotation();
+            this.playSplash();
         }, 50);
     }
 
+
+    throwToRight() {
+        if (!this.otherDirection) {
+            this.flyRight();
+        }
+    }
+
+
+    throwToLeft() {
+        if (this.otherDirection) {
+            this.flyLeft();
+        }
+    }
+
+
+    flyRight() {
+        this.speedY = 30;
+        this.applyGravity();
+        let interval1 = setInterval(() => {
+            this.x += 10;
+            if (this.y >= 450) {
+                clearInterval(interval1);
+            }
+        }, 25);
+    }
+
+
+    flyLeft() {
+        this.speedY = 30;
+        this.applyGravity();
+        let interval2 = setInterval(() => {
+            this.x -= 10;
+            if (this.y >= 450) {
+                clearInterval(interval2);
+            }
+        }, 25);
+    }
+
+
+    playRotation() {
+        if (!this.bottleHit) {
+            this.playAnimation(this.IMAGES_ROTATION);
+        }
+    }
+
+    playSplash() {
+        if (this.bottleHit) {
+            this.playAnimation(this.IMAGES_SPLASH);
+        }
+    }
 
 }

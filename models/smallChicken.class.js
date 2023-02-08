@@ -1,5 +1,4 @@
 class smallChicken extends MovableObject {
-
     y = 367;
     height = 60;
     width = 60;
@@ -27,26 +26,5 @@ class smallChicken extends MovableObject {
         this.speed = 0.15 + Math.random() * 0.5;
         this.animateChicken(this.speed, this.IMAGES_WALKING, 'img/3_enemies_chicken/chicken_small/2_dead/dead.png');
     }
-
-    // animate() {
-    //     setInterval(() => {
-    //         this.moveLeft(this.speed);
-    //     }, 1000 / 60);
-
-    //     setInterval(() => {
-    //         if (!this.speed == 0)
-    //             this.playAnimation(this.IMAGES_WALKING);
-    //     }, 200);
-
-
-    //     setInterval(() => {
-    //         if (this.isDead()) {
-    //             this.speed = 0;
-    //             this.loadImage('img/3_enemies_chicken/chicken_small/2_dead/dead.png');
-    //         }
-    //     }, 50);
-
-    // }
-
 
 }

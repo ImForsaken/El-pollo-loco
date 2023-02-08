@@ -9,9 +9,6 @@ class StatusbarHealthBoss extends DrawableObject {
     ];
 
 
-
-
-
     constructor() {
         super();
         this.loadImages(this.IMAGES);

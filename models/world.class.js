@@ -33,10 +33,10 @@ class World {
     };
 
 
-
     start() {
         this.gamePaused = false;
     };
+
 
     checkGameEnd() {
         this.gameEnding();
@@ -58,7 +58,6 @@ class World {
         }, 50);
     }
 
-    //checks if a chicken is colliding with character or bottle by getting into the level variable which contains our enemys
 
     //checks if bottle breaks
     run2() {
@@ -72,8 +71,6 @@ class World {
         this.startEndbossBattle();
         this.checkIfBossIsLeftOrRight();
     }
-
-
 
 
     //TODO THIS:CHARACTER MAYBE DELETE AS PAREMTER SAME FOR THROWABLE CLASS
@@ -125,7 +122,6 @@ class World {
         this.addObjectToMap(this.level.backgroundObjects);
 
 
-
         this.addObjectToMap(this.level.clouds);
         this.addObjectToMap(this.level.bottles);
         this.addObjectToMap(this.level.coins);
@@ -152,11 +148,11 @@ class World {
 
         //TODO
         //draw() will be called in the same speed as the user screen refreshrate caused by requestAnimationFrame
-        let self = this; // this declaration can be ignored if we make requestAnimationFrame a anonymous function since calling function handles the "this" else then anonymous functions prob change later to anonymous function () =>
         requestAnimationFrame(() => {
             this.draw();
         });
     };
+
 
     //array objects or single object which we add to world like chicken, character etc
     addObjectToMap(object) {
@@ -165,12 +161,12 @@ class World {
         });
     };
 
+
     //mo movableobject
     addToMap(mo) {
         if (mo.otherDirection) {
             this.flipImage(mo);
         }
-
         mo.drawObjectToMap(this.ctx);
         // mo.drawFrameAroundObject(this.ctx);
         //TODO ADD THIS WHEN WE ADD DRAWCODRINATES
@@ -179,7 +175,6 @@ class World {
             this.flipImageBack(mo);
         }
     };
-
 
 
     flipImage(mo) {
@@ -192,13 +187,13 @@ class World {
         mo.x = mo.x * -1;
     }
 
+
     flipImageBack(mo) {
         mo.x = mo.x * -1;
 
         //restore the point of save();
         this.ctx.restore();
     }
-
 
 
     //help function
@@ -218,6 +213,7 @@ class World {
         this.statusBarCoin.setPercentage(this.character.coinAmount);
     }
 
+
     checkIfCharacrterCollidesBottle() {
         this.level.bottles.forEach(bottle => {
             if (this.checkInventorySpace(bottle)) {
@@ -226,9 +222,11 @@ class World {
         })
     }
 
+
     checkInventorySpace(bottle) {
         return this.character.isColliding(bottle) && this.character.bottleInventoryCounter <= 4
     }
+
 
     pickBottleUp(bottle) {
         this.character.bottleInventoryCounter++;
@@ -237,15 +235,18 @@ class World {
         this.level.bottles.splice(this.level.bottles.indexOf(bottle), 1);
     }
 
+
     healCharacter() {
         if (this.checkIfCharacterDeservHeal()) {
             this.healCharacterNow();
         }
     }
 
+
     checkIfCharacterDeservHeal() {
         return this.character.coinAmount == 100 && this.character.energy < 100
     }
+
 
     healCharacterNow() {
         this.character.coinAmount = 0;
@@ -262,6 +263,7 @@ class World {
         }
     }
 
+
     checkIfBossIsInVision() {
         return !this.character.gamePaused && this.character.x >= 2000 && !this.level.endboss.denyCheck;
     }
@@ -272,11 +274,13 @@ class World {
         this.bossIsLeftSide();
     }
 
+
     bossIsRightSide() {
         if (this.checkIfBossIsRightSide()) {
             this.level.endboss.otherDirection = false;
         }
     }
+
 
     bossIsLeftSide() {
         if (this.checkIfBossIsLeftSide()) {
@@ -289,6 +293,7 @@ class World {
         return !this.level.endboss.isDead() && (this.character.x + (this.character.width / 2)) < this.level.endboss.x + (this.level.endboss.width / 2) - 600 && this.level.endboss.bossRageStart;
     }
 
+
     checkIfBossIsLeftSide() {
         return !this.level.endboss.isDead() && this.character.x + (this.character.width / 2) > this.level.endboss.x + (this.level.endboss.width / 2) + 600 && this.level.endboss.bossRageStart;
     }
@@ -299,15 +304,18 @@ class World {
         this.pressKey();
     }
 
+
     pressKey() {
         this.pressKeyToSetIdleTimer();
     }
+
 
     pressKeyToSetIdleTimer() {
         if (this.checkWhichKeyIsPressed()) {
             this.character.lastKeyPress = new Date().getTime();
         }
     }
+
 
     checkWhichKeyIsPressed() {
         return keyboard.LEFT || keyboard.RIGHT || keyboard.UP || keyboard.DOWN || keyboard.SPACE || keyboard.D
@@ -320,9 +328,11 @@ class World {
         }
     }
 
+
     gameEndsWhen() {
         return this.character.isDead() || this.level.endboss.isDead() && !gameEnd;
     }
+
 
     initGameEnd() {
         setTimeout(() => {
@@ -332,11 +342,13 @@ class World {
         }, 4000);
     }
 
+
     checkWhichChickenIsDefeatedByJump(chickenVersion) {
         chickenVersion.forEach((enemy) => {
             this.characterHitsChickenFromTop(enemy, chickenVersion);
         });
     }
+
 
     throwBottleRight() {
         if (this.checkIfBottleFlyRightDirection()) {
@@ -344,17 +356,20 @@ class World {
         }
     }
 
+
     throwBottleLeft() {
         if (this.checkIfBottleFlyLeftDirection()) {
             this.throwBottleTo(this.character.x - 10);
         }
     }
 
+
     characterThrowBottle() {
         this.throwableObjects.forEach((bottle) => {
             this.characterHitsEnemysWith(bottle);
         });
     }
+
 
     characterHitsEnemysWith(bottle) {
         this.bottleHitSmallAndNormalChicken(bottle);
@@ -372,6 +387,7 @@ class World {
         });
     }
 
+
     bottleHitEndboss(bottle) {
         if (this.checkBossDamageWorthy(bottle)) {
             bottle.bottleHit = true;
@@ -379,7 +395,6 @@ class World {
             this.statusBarHealthBoss.setPercentage(this.level.endboss.energy);
         };
     }
-
 
 
     bottleBreaksOnGround(bottle) {
@@ -400,6 +415,7 @@ class World {
         });
     }
 
+
     checkSmallChickenCollision() {
         this.level.smallChicken.forEach((enemy) => {
             if (this.checkIfSmallChickenCanDoDamageToCharacter(enemy)) {
@@ -417,7 +433,6 @@ class World {
             this.level.endboss.isAttacking = false;
         }
     }
-
 
 
     //throws bottle to transfered direction
@@ -466,16 +481,21 @@ class World {
         return !this.gamePaused && !this.level.endboss.isHurt(this.level.endboss.immortalDuration) && this.level.endboss.bossRageStart && !bottle.bottleHit && !this.level.endboss.isDead() && bottle.isColliding(this.level.endboss)
     }
 
+
     checkIfNormalChickenCanDoDamageToCharacter(enemy) {
         return !this.gamePaused && !this.character.isAboveNormalChicken() && !this.character.isHurt(this.character.immortalDuration) && enemy.energy > 0 && this.character.isCollidingHorizontal(enemy)
     }
+
+
     checkIfSmallChickenCanDoDamageToCharacter(enemy) {
         return !this.gamePaused && !this.character.isAboveSmallChicken() && !this.character.isHurt(this.character.immortalDuration) && enemy.energy > 0 && this.character.isCollidingHorizontal(enemy)
     }
 
+
     checkIfEndbossCanDoDamageToCharacter() {
         return !this.gamePaused && !this.character.isHurt(this.character.immortalDuration) && !this.level.endboss.isHurt(this.level.endboss.immortalDuration) && this.level.endboss.energy > 0 && this.character.isCollidingHorizontal(this.level.endboss) && !this.character.isDead()
     }
+
 
     checkIfEndbossIsAttackingCharacter() {
         return !this.gamePaused && !this.character.isHurt(this.character.immortalDuration);
@@ -486,9 +506,11 @@ class World {
         return !this.gamePaused && !enemy.isDead() && this.character.characterIsFalling() && !this.character.isHurt(this.character.immortalDuration) && this.character.isColliding(enemy);
     }
 
+
     checkIfBottleFlyRightDirection() {
         return !this.character.gamePaused && keyboard.D && !this.character.otherDirection && !this.character.isDead() && this.character.bottleInventoryCounter > 0;
     }
+
 
     checkIfBottleFlyLeftDirection() {
         return !this.character.gamePaused && keyboard.D && this.character.otherDirection && !this.character.isDead() && this.character.bottleInventoryCounter > 0;

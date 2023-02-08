@@ -78,56 +78,40 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-        //TODO MAKE CHICKEN MOVE
-        // setInterval(() => {
-        //     this.moveLeft(this.speed);
-        // }, 1000 / 60);
-
-
-
         setInterval(() => {
             this.endbossAttack()
         }, 150);
-
-
         setInterval(() => {
-            if (!world.gamePaused && this.inVision) {
-                if (this.alertLoop <= (this.IMAGES_ALERT.length - 1)) {
-                    this.loadImage(this.IMAGES_ALERT[this.alertLoop]);
-                    this.alertLoop += 1;
-                    console.log(this.alertLoop)
-                } else if (this.alertLoop == 8 && this.inVision) {
-                    this.bossRageStart = true;
-                    this.inVision = false;
-                    this.denyCheck = true;
-                }
-            } else if (!world.gamePaused && this.isAttacking && !this.isHurt(this.immortalDuration) && !this.isDead()) {
-                this.playAnimation(this.IMAGES_ATTACK);
-            } else if (!world.gamePaused && !this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration) && !this.isAttacking) {
-                this.playAnimation(this.IMAGES_WALKING);
-            } else if (!world.gamePaused && this.isHurt(this.immortalDuration) && !this.isDead()) {
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (!world.gamePaused && this.isDead()) {
-                if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
-                    this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
-                    this.deadLoop += 1;
-                }
-            }
+            this.EndbossFight();
         }, 200);
-
-        //TODO MAYBE USE THIS BECAUSE DEAD ANIMATION TAKES LONGER to be animated(maybe smoother)
-        // setInterval(() => {
-        //     if (this.isDead()) {
-        //         if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
-        //             this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
-        //             this.deadLoop += 1;
-        //         }
-        //     }
-        // }, 350);
-
-
     };
 
+
+    EndbossFight() {
+        if (this.checkStartOfEndbossFight()) {
+            this.startEndbossFight();
+        } else if (this.checkIfEndbossIsAttacking()) {
+            this.playAnimation(this.IMAGES_ATTACK);
+        } else if (this.checkIfEndbossIsWalking()) {
+            this.playAnimation(this.IMAGES_WALKING);
+        } else if (this.checkIfEndbossIsHurt()) {
+            this.playAnimation(this.IMAGES_HURT);
+        } else if (this.checkIfEndbossIsDead()) {
+            this.playDead();
+        }
+    }
+
+    startEndbossFight() {
+        if (this.alertLoop <= (this.IMAGES_ALERT.length - 1)) {
+            this.loadImage(this.IMAGES_ALERT[this.alertLoop]);
+            this.alertLoop += 1;
+            console.log(this.alertLoop)
+        } else if (this.alertLoop == 8 && this.inVision) {
+            this.bossRageStart = true;
+            this.inVision = false;
+            this.denyCheck = true;
+        }
+    }
 
 
     endbossAttack() {
@@ -138,10 +122,37 @@ class Endboss extends MovableObject {
         }
     }
 
+
+    playDead() {
+        if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
+            this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
+            this.deadLoop += 1;
+        }
+    }
+
+
     bosscharge(speed) {
         this.x -= speed;
     }
 
 
+    checkStartOfEndbossFight() {
+        return !world.gamePaused && this.inVision;
+    }
 
+    checkIfEndbossIsAttacking() {
+        return !world.gamePaused && this.isAttacking && !this.isHurt(this.immortalDuration) && !this.isDead();
+    }
+
+    checkIfEndbossIsWalking() {
+        return !world.gamePaused && !this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration) && !this.isAttacking;
+    }
+
+    checkIfEndbossIsHurt() {
+        return !world.gamePaused && this.isHurt(this.immortalDuration) && !this.isDead();
+    }
+
+    checkIfEndbossIsDead() {
+        return !world.gamePaused && this.isDead();
+    }
 }

@@ -1,11 +1,7 @@
 class Character extends MovableObject {
-    // y = 184;
     height = 250;
-    //y  = 90;
     y = 190;
     charDmg = 20;
-    //width is 100;
-    //world is the variable which make it possible for the class character to have access to variables of class world
     world;
     speed = 5;
     immortalDuration = 1.5;
@@ -22,6 +18,7 @@ class Character extends MovableObject {
     longIdle = 8;
     startIdle = 4;
     bottleInventoryCounter = 0;
+
 
     IMAGES_WALKING = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -91,7 +88,6 @@ class Character extends MovableObject {
     ];
 
 
-
     //in constructor we load the functions we want the object to start instanly with. Animate makes the character acessable to animation
     constructor() {
         super();
@@ -106,124 +102,198 @@ class Character extends MovableObject {
         this.animate();
     };
 
-    animate() {
 
+    animate() {
+        this.charMoveActions();
+        this.camerMovement();
+        this.playCharAnimations();
+        this.playDeadAnimation();
+        this.charMovementSounds();
+    };
+
+
+    charMoveActions() {
         //checks 60times per second which key has been pressed by checking the keyboard direction variables
         setInterval(() => {
-
-            if (!world.gamePaused && keyboard.RIGHT && this.x < world.level.level_end_x && this.energy > 0) {
-                this.moveRight();
-                this.otherDirection = false;
-                this.walking_sound.play();
-                if (world.camera_x == -this.x + 120 + 5) {
-
-                    world.camera_x = -this.x + 120;
-                }
-                // console.log(-this.x + 120)
-                // world.camera_x = -this.x + 120;
-                // console.log('camera right walk = ', world.camera_x, 'calculated pos', -this.x + 120)
-
-            }
-            if (!world.gamePaused && keyboard.LEFT && this.x > -100 && this.energy > 0) {
-                this.moveLeft(this.speed);
-                this.walking_sound.play();
-                this.otherDirection = true;
-                if (world.camera_x == (-this.x + 500) - 5) {
-                    world.camera_x = -this.x + 500;
-                }
-                // console.log(-this.x + 500)
-                // world.camera_x = -this.x + 500;
-                // console.log('camera left walk position = ', world.camera_x, 'calculated pos', -this.x + 500)
-
-                //TODO change this coordinate to make camera move to the other side if he changes directions to make a smoother picture
-                //world.camera_x = -this.x + 100;
-            }
-            if (!world.gamePaused && keyboard.SPACE && !this.isAboveGround() && this.energy > 0) {
-                this.jump();
-            }
-
-
-            //focus camera on character and changes the starting point of him
+            this.charMoveRight();
+            this.charMoveLeft();
+            this.charJump();
         }, 1000 / 65);
+    }
 
 
+    camerMovement() {
         setInterval(() => {
-            if (!this.otherDirection && world.camera_x > (-this.x + 120)) {
-                this.smoothCamera(+this.cameraSpeed);
-            }
-
-            if (this.otherDirection && world.camera_x < (-this.x + 500)) {
-                this.smoothCamera(-this.cameraSpeed);
-            }
-
+            this.moveCameraLeft();
+            this.moveCameraRight();
         }, 5);
+    }
 
 
+    charMovementSounds() {
         //makes sound reset after stop pressing a key to run with the Character
         setInterval(() => {
-            if (!keyboard.RIGHT && !keyboard.LEFT) {
-                this.walking_sound.pause();
-                this.walking_sound.currentTime = 0.5;
-            }
+            if (!keyboard.RIGHT && !keyboard.LEFT) this.playWalkingSound();
         }, 1000 / 60);
+    }
 
 
-        //checks pressed key and starts animation of character
+    playDeadAnimation() {
         setInterval(() => {
-            if (!world.gamePaused && this.isHurt(this.immortalDuration) && !this.isDead()) {
+            if (this.checkCharIsDead()) this.playDead();
+        }, 350);
+    }
+
+
+    playCharAnimations() {
+        setInterval(() => {
+            if (this.checkIfCharIsHurt()) {
                 this.playAnimation(this.IMAGES_HURT);
-            } else if (!world.gamePaused && this.isAboveGround() && !this.isDead()) {
-                // console.log('Last Y', this.lastY, 'current Y', this.y, 'CALCULATED', (this.lastY - this.y))
+            } else if (this.checkIfCharIsJumping()) {
                 this.playAnimation(this.IMAGES_JUMPING);
-            } else if (!world.gamePaused && (keyboard.RIGHT || keyboard.LEFT) && this.energy > 0 && !this.isDead()) {
-                //Walk animation
+            } else if (this.checkCharWalking()) {
                 this.playAnimation(this.IMAGES_WALKING);
-            } else if (!world.gamePaused && this.characterStartLongIdling(this.longIdle) && this.lastKeyPress > 0 && !this.isDead()) {
+            } else if (this.checkCharLongIdle()) {
                 console.log('long idle', this.characterStartLongIdling(this.startIdle));
                 this.playAnimation(this.IMAGES_LONG_IDLE);
-            } else if (!world.gamePaused && this.characterStartIdling(this.startIdle) && !this.isDead()) {
+            } else if (this.checkCharIdle()) {
                 console.log('short idle', this.characterStartIdling(this.startIdle));
                 this.playAnimation(this.IMAGES_IDLE);
-            } else if (!world.gamePaused && !this.isDead()) {
+            } else if (this.checkCharIsAfk()) {
                 this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
             }
         }, 220);
-
-
-        setInterval(() => {
-            if (this.isDead() && !this.isHurt()) {
-                if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
-                    this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
-                    this.deadLoop += 1;
-                }
-            }
-        }, 350);
+    }
 
 
 
+    charMoveRight() {
+        if (this.checkIfCharMovesRight()) {
+            this.moveCharToRight()
+        }
+    }
 
 
-        // setInterval(() => {
-        //     if (this.otherDirection && world.camera_x < (-this.x + 500) && !this.camLock) {
-        //         console.log('adding camera', world.camera_x, (-this.x + 500) - 5);
-        //         this.smoothCamera(-this.cameraSpeed);
-        //     } else if (world.camera_x == (-this.x + 500) && this.otherDirection) {
-        //         console.log('works', world.camera_x)
-        //         world.camera_x = (-this.x + 500);
-        //         console.log('calc', world.camera_x, -this.x + 500)
-
-        //     }
+    charMoveLeft() {
+        if (this.checkIfCharMovesLeft()) {
+            this.moveCharToLeft();
+        }
+    }
 
 
+    charJump() {
+        if (this.checkCharJump()) {
+            this.jump();
+        }
+    }
 
-        //     else if (world.camera_x >= (-this.x + 120) && !this.otherDirection) {
-        //         this.smoothCamera(+this.cameraSpeed);
-        //     }
-        // }, 5);
+
+    moveCharToRight() {
+        this.moveRight();
+        this.otherDirection = false;
+        this.walking_sound.play();
+        if (world.camera_x == -this.x + 120 + 5) {
+            world.camera_x = -this.x + 120;
+        }
+    }
 
 
-    };
+    moveCharToLeft() {
+        this.moveLeft(this.speed);
+        this.walking_sound.play();
+        this.otherDirection = true;
+        if (world.camera_x == (-this.x + 500) - 5) {
+            world.camera_x = -this.x + 500;
+        }
+    }
 
+
+    checkCharJump() {
+        return !world.gamePaused && keyboard.SPACE && !this.isAboveGround() && this.energy > 0;
+    }
+
+
+    checkIfCharMovesLeft() {
+        return !world.gamePaused && keyboard.LEFT && this.x > -100 && this.energy > 0;
+    }
+
+
+    checkIfCharMovesRight() {
+        return !world.gamePaused && keyboard.RIGHT && this.x < world.level.level_end_x && this.energy > 0;
+    }
+
+
+    moveCameraRight() {
+        if (this.checkCameraPositionRight()) {
+            this.smoothCamera(-this.cameraSpeed);
+        }
+    }
+
+
+    moveCameraLeft() {
+        if (this.checkCameraPositionLeft()) {
+            this.smoothCamera(+this.cameraSpeed);
+        }
+    }
+
+
+    checkCameraPositionLeft() {
+        return !this.otherDirection && world.camera_x > (-this.x + 120);
+    }
+
+
+    checkCameraPositionRight() {
+        return this.otherDirection && world.camera_x < (-this.x + 500);
+    }
+
+
+    playWalkingSound() {
+        this.walking_sound.pause();
+        this.walking_sound.currentTime = 0.5;
+    }
+
+
+    checkCharIsDead() {
+        return this.isDead() && !this.isHurt();
+    }
+
+
+    checkIfCharIsHurt() {
+        return !world.gamePaused && this.isHurt(this.immortalDuration) && !this.isDead();
+    }
+
+
+    checkIfCharIsJumping() {
+        return !world.gamePaused && this.isAboveGround() && !this.isDead();
+    }
+
+
+    checkCharWalking() {
+        return !world.gamePaused && (keyboard.RIGHT || keyboard.LEFT) && this.energy > 0 && !this.isDead();
+    }
+
+
+    checkCharLongIdle() {
+        return !world.gamePaused && this.characterStartLongIdling(this.longIdle) && this.lastKeyPress > 0 && !this.isDead();
+    }
+
+
+    checkCharIdle() {
+        return !world.gamePaused && this.characterStartIdling(this.startIdle) && !this.isDead();
+    }
+
+
+    checkCharIsAfk() {
+        return !world.gamePaused && !this.isDead();
+    }
+
+
+    playDead() {
+        if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
+            this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
+            this.deadLoop += 1;
+        }
+    }
 
 
     smoothCamera(speed) {

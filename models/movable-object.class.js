@@ -1,7 +1,5 @@
 //Class that defines all movable objects like character or chicken
 class MovableObject extends DrawableObject {
-
-
     speed = 0.15;
     speedY = 0;
     acceleration = 2.5;

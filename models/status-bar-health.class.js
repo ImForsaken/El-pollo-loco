@@ -1,5 +1,4 @@
 class StatusbarHealth extends DrawableObject {
-
     IMAGES = [
         'img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png', // 0 path
         'img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png',
@@ -8,7 +7,6 @@ class StatusbarHealth extends DrawableObject {
         'img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
         'img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png', //5 path
     ];
-
 
 
     constructor() {
