@@ -77,6 +77,7 @@ class Endboss extends MovableObject {
         this.animate();
     }
 
+
     animate() {
         setInterval(() => {
             this.endbossAttack()
@@ -100,6 +101,7 @@ class Endboss extends MovableObject {
             this.playDead();
         }
     }
+
 
     startEndbossFight() {
         if (this.alertLoop <= (this.IMAGES_ALERT.length - 1)) {
@@ -140,17 +142,21 @@ class Endboss extends MovableObject {
         return !world.gamePaused && this.inVision;
     }
 
+
     checkIfEndbossIsAttacking() {
         return !world.gamePaused && this.isAttacking && !this.isHurt(this.immortalDuration) && !this.isDead();
     }
+
 
     checkIfEndbossIsWalking() {
         return !world.gamePaused && !this.isDead() && !this.inVision && !this.isHurt(this.immortalDuration) && !this.isAttacking;
     }
 
+
     checkIfEndbossIsHurt() {
         return !world.gamePaused && this.isHurt(this.immortalDuration) && !this.isDead();
     }
+
 
     checkIfEndbossIsDead() {
         return !world.gamePaused && this.isDead();

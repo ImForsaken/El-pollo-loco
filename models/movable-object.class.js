@@ -7,6 +7,7 @@ class MovableObject extends DrawableObject {
     energy = 100;
     lastHit = 0;
     lastKeyPress;
+    lastBottleThrown = 0;
     intervalID;
     isDamaged = false;
     immortalDuration = 0;
@@ -184,6 +185,13 @@ class MovableObject extends DrawableObject {
     };
 
 
+    //controlls that bottles can only be thrown every 0.5 seconds after last throwing bottle
+    throwBottleCooldown(throwTimer) {
+        let timepassed = new Date().getTime() - this.lastBottleThrown;
+        timepassed = timepassed / 1000;
+        return timepassed > throwTimer;
+    }
+
 
     isDead() {
         return this.energy == 0;
@@ -228,7 +236,6 @@ class MovableObject extends DrawableObject {
     }
 
 
-
     moveChickenToLeft(speed) {
         setInterval(() => {
             if (!world.gamePaused && !this.isDead()) {
@@ -237,12 +244,14 @@ class MovableObject extends DrawableObject {
         }, 1000 / 60);
     }
 
+
     playChickenMove(imagesWalking) {
         setInterval(() => {
-            if (!this.speed == 0 && !world.gamePaused && !this.isDead())
+            if (this.checkIfChickenIsMoving())
                 this.playAnimation(imagesWalking);
         }, 200);
     }
+
 
     playChickenDead(ImageDead) {
         setInterval(() => {
@@ -251,6 +260,11 @@ class MovableObject extends DrawableObject {
                 this.loadImage(ImageDead);
             }
         }, 50);
+    }
+
+
+    checkIfChickenIsMoving() {
+        return !this.speed == 0 && !world.gamePaused && !this.isDead();
     }
 
 }

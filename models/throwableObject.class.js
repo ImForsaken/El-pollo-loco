@@ -36,7 +36,7 @@ class ThrowableObject extends MovableObject {
 
 
     throw () {
-        //THROW RIGHT IF CHAR LOOKS RIGHT SIDE  - OR Not
+        //THROW RIGHT IF CHAR LOOKS RIGHT SIDE  - OR Not   
         this.throwToRight();
         this.throwToLeft();
     }

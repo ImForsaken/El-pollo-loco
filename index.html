@@ -32,10 +32,9 @@
 <body>
     <div class="gameBox" id="gameBox">
         <div class="gameScreen" id="gameScreen">
-            <img src="img/9_intro_outro_screens/start/startscreen_2.png" alt="gameIntro" class="gameIntro"
-                id="gameIntro">
-            <img src="img/9_intro_outro_screens/game_over/game over.png" alt="gameOutro" class="gameOutro"
-                id="gameOutro">
+            <button onclick="refreshLoop()" class="fpsBlock" id="fpsBlock">Show Fps</button>
+            <img src="img/9_intro_outro_screens/start/startscreen_2.png" alt="gameIntro" class="gameIntro" id="gameIntro">
+            <img src="img/9_intro_outro_screens/game_over/game over.png" alt="gameOutro" class="gameOutro" id="gameOutro">
             <div alt="gameInfo" class="gameInfo" id="gameInfo">
                 <div class="infoBox" id="infoBox">
                     <div class="infoLine">
@@ -51,12 +50,14 @@
                         <img src="img/9_intro_outro_screens/rightButton.png" alt="rightButton" class="explainButton">
                     </div>
                     <div class="infoLine">
-                        <span>Press spacebar to Jump</span>
+                        <span>Press spacebar or Arrow up to Jump</span>
                         <img src="img/9_intro_outro_screens/spaceButton.png" alt="spaceButton" class="explainButton">
+                        <img src="img/9_intro_outro_screens/upButton.png" alt="arrowUp" class="explainButton">
                     </div>
                     <div class="infoLine">
-                        <span>Press D button to Throw bottle</span>
+                        <span>Press D button or Bottle to Throw bottle</span>
                         <img src="img/9_intro_outro_screens/dButton.png" alt="spaceButton" class="explainButton">
+                        <img src="img/9_intro_outro_screens/throwButton.png" alt="throwTouch" class="explainButton">
                     </div>
                     <div class="infoLine">
                         <span>Play and Pause the Game</span>
@@ -73,14 +74,23 @@
                 </div>
             </div>
             <button onclick="showInfo()" class="infoButton" id="infoButton"></button>
-            <img onclick="pausePlaygame()" class="pausePlayButton" id="pausePlayButton"
-                src="img/9_intro_outro_screens/pauseButton.png">
-            <img onclick="fullscreenMode()" class="fullscreenButton" id="fullscreenButton"
-                src="img/9_intro_outro_screens/joinFullscreen.png">
+            <img onclick="pausePlaygame()" class="pausePlayButton" id="pausePlayButton" src="img/9_intro_outro_screens/pauseButton.png">
+            <img onclick="showHideUiButton()" class="showHideUiButton" id="showHideUiButton" src="img/9_intro_outro_screens/showUI.png">
+            <img onclick="fullscreenMode()" class="fullscreenButton" id="fullscreenButton" src="img/9_intro_outro_screens/joinFullscreen.png">
+            <div class="touchButtonsContainer" id="touchButtonsContainer">
+                <div class="touchButtonBox">
+                    <img class="arrowLeftButton" id="arrowLeftButton" src="img/9_intro_outro_screens/leftButton.png">
+                    <img class="arrowRightButton" id="arrowRightButton" src="img/9_intro_outro_screens/rightButton.png">
+                </div>
+                <div class="touchButtonBox">
+                    <img class="jumpButton" id="jumpButton" src="img/9_intro_outro_screens/upButton.png">
+                    <img class="throwButton" id="throwButton" src="img/9_intro_outro_screens/throwButton.png">
+                </div>
+            </div>
+            <button onclick="init()" class="startButton" id="startButton">Click to Start game</button>
             <canvas id="canvas" width="720px" height="480px">
             </canvas>
         </div>
-        <button onclick="init()" class="startButton" id="startButton">Click to Start game</button>
     </div>
     <script src="js/game.js"></script>
 

@@ -30,14 +30,6 @@ class DrawableObject {
         }
     }
 
-    //TODO DRAW THE HITS ON CANVAS
-    // drawCoordinates(ctx){
-    //     //instanceof limits this function on specified classes Character, Chicken and Endboss
-    //     if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof Coin) {
-    //        ctx.font = "48px serif";
-    //         ctx.fillText(${this.x}, ${this.y}, this.x, this.y);
-    //     }
-    //   }
 
     loadImage(path) {
         this.img = new Image(); // creates a new image tag which exist only in JS til we add it to html

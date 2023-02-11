@@ -5,6 +5,8 @@ class Character extends MovableObject {
     world;
     speed = 5;
     immortalDuration = 1.5;
+    bottleCooldown = 0.5;
+    lastBottleThrown = new Date().getTime();
     cameraSpeed = 5;
     walking_sound = new Audio('audio/standardWalking.mp3');
     offset = {
@@ -28,6 +30,7 @@ class Character extends MovableObject {
         'img/2_character_pepe/2_walk/W-25.png',
         'img/2_character_pepe/2_walk/W-26.png'
     ];
+
 
     IMAGES_JUMPING = [
         'img/2_character_pepe/3_jump/J-31.png',
@@ -113,7 +116,7 @@ class Character extends MovableObject {
 
 
     charMoveActions() {
-        //checks 60times per second which key has been pressed by checking the keyboard direction variables
+        //checks 60times per second which key has been pressed by checking the this.world.keyboard direction variables
         setInterval(() => {
             this.charMoveRight();
             this.charMoveLeft();
@@ -133,7 +136,7 @@ class Character extends MovableObject {
     charMovementSounds() {
         //makes sound reset after stop pressing a key to run with the Character
         setInterval(() => {
-            if (!keyboard.RIGHT && !keyboard.LEFT) this.playWalkingSound();
+            if (!this.world.keyboard.RIGHT && !this.world.keyboard.LEFT) this.playWalkingSound();
         }, 1000 / 60);
     }
 
@@ -209,17 +212,17 @@ class Character extends MovableObject {
 
 
     checkCharJump() {
-        return !world.gamePaused && keyboard.SPACE && !this.isAboveGround() && this.energy > 0;
+        return !world.gamePaused && this.world.keyboard.SPACE && !this.isAboveGround() && this.energy > 0;
     }
 
 
     checkIfCharMovesLeft() {
-        return !world.gamePaused && keyboard.LEFT && this.x > -100 && this.energy > 0;
+        return !world.gamePaused && this.world.keyboard.LEFT && this.x > -100 && this.energy > 0;
     }
 
 
     checkIfCharMovesRight() {
-        return !world.gamePaused && keyboard.RIGHT && this.x < world.level.level_end_x && this.energy > 0;
+        return !world.gamePaused && this.world.keyboard.RIGHT && this.x < world.level.level_end_x && this.energy > 0;
     }
 
 
@@ -269,7 +272,7 @@ class Character extends MovableObject {
 
 
     checkCharWalking() {
-        return !world.gamePaused && (keyboard.RIGHT || keyboard.LEFT) && this.energy > 0 && !this.isDead();
+        return !world.gamePaused && (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.energy > 0 && !this.isDead();
     }
 
 

@@ -1,6 +1,7 @@
 class World {
     character = new Character();
     level = level1;
+    keyboard;
     canvas;
     ctx;
     camera_x = 0;
@@ -12,21 +13,20 @@ class World {
     gameStarted = false;
     gamePaused = false;
 
-    constructor(canvas) {
+    constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas; //this.canvas stands for the instance variable on top while the canvas behind = stands for the parameter in the constructor
+        this.keyboard = keyboard;
         this.draw();
+        this.setWorld();
         this.run();
-        this.run2();
+        // this.run2();
     }
 
 
-    //makes it possible for character object to access the variables of the world class object like keyboard
-    //the class character get access to all variables of class World by setting the character instance variable world to "this" which contains all variables of class world
     setWorld() {
         this.character.world = this;
     }
-
 
     pause() {
         this.gamePaused = true;
@@ -39,7 +39,14 @@ class World {
 
 
     checkGameEnd() {
-        this.gameEnding();
+        if (this.gameEndsWhen()) {
+            setTimeout(() => {
+                gameEnd = true;
+                gameStart = false;
+                for (let i = 1; i < 9999; i++) window.clearInterval(i);
+                gameEndScreen();
+            }, 4000);
+        }
     }
 
 
@@ -55,16 +62,15 @@ class World {
             this.healCharacterWithCoins();
             this.lastKeyPressTimer();
             this.checkGameEnd();
+            this.checkThrowObjects();
         }, 50);
     }
 
 
-    //checks if bottle breaks
-    run2() {
-        setInterval(() => {
-            this.checkThrowObjects();
-        }, 250);
-    }
+    //checks which direction the bottle should fly --- update--- inserted a bootleTHrow cooldown if not good remove cooldown and set this interval to controll bottles not being spammed
+    // run2() {
+    //     setInterval(() => {}, 250);
+    // }
 
 
     checkBossCordinates() {
@@ -75,28 +81,51 @@ class World {
 
     //TODO THIS:CHARACTER MAYBE DELETE AS PAREMTER SAME FOR THROWABLE CLASS
     checkThrowObjects() {
-        this.throwBottleRight();
-        this.throwBottleLeft();
+        if (this.character.throwBottleCooldown(this.character.bottleCooldown)) {
+            this.throwBottleRight();
+            this.throwBottleLeft();
+        }
     }
 
 
     checkBottlePickUp() {
-        this.checkIfCharacrterCollidesBottle();
+        this.level.bottles.forEach(bottle => {
+            if (this.checkInventorySpace(bottle)) {
+                this.character.bottleInventoryCounter++;
+                this.character.bottleAmount += 20;
+                this.statusBarBottle.setPercentage(this.character.bottleAmount);
+                this.level.bottles.splice(this.level.bottles.indexOf(bottle), 1);
+            }
+        })
     }
 
 
     checkCoinPickUp() {
-        this.charPicksUpCoin();
+        this.level.coins.forEach(coin => {
+            if (this.character.isColliding(coin) && this.character.coinAmount < 100) {
+                this.level.coins.splice(this.level.coins.indexOf(coin), 1);
+                this.character.coinAmount += 20;
+                this.statusBarCoin.setPercentage(this.character.coinAmount);
+            }
+        });
+
     }
 
 
     healCharacterWithCoins() {
-        this.healCharacter();
+        if (this.checkIfCharacterDeservHeal()) {
+            this.character.coinAmount = 0;
+            this.character.energy += 20;
+            this.statusBarCoin.setPercentage(this.character.coinAmount);
+            this.statusBarHealth.setPercentage(this.character.energy);
+        }
     }
 
 
     checkBottleCollision() {
-        this.characterThrowBottle();
+        this.throwableObjects.forEach((bottle) => {
+            this.characterHitsEnemysWith(bottle);
+        });
     };
 
 
@@ -111,42 +140,29 @@ class World {
     //Character hits chicken from top and kills         this.character.y <= 115
 
     characterJumpsOn(chickenVersion) {
-        this.checkWhichChickenIsDefeatedByJump(chickenVersion);
+        chickenVersion.forEach((enemy) => {
+            this.characterHitsChickenFromTop(enemy, chickenVersion);
+        });
+    }
+
+
+    //checks when last key was pressed and set timer to calculate characters idle animation start
+    lastKeyPressTimer() {
+        if (this.checkWhichKeyIsPressed()) {
+            this.character.lastKeyPress = new Date().getTime();
+        }
     }
 
 
     draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height) //clears the screen everytime draw is called
-            //focus the camera on the character
-        this.ctx.translate(this.camera_x, 0);
-        this.addObjectToMap(this.level.backgroundObjects);
-
-
-        this.addObjectToMap(this.level.clouds);
-        this.addObjectToMap(this.level.bottles);
-        this.addObjectToMap(this.level.coins);
-        this.addObjectToMap(this.throwableObjects);
-        this.addObjectToMap(this.level.normalChicken);
-        this.addObjectToMap(this.level.smallChicken);
-        this.addToMap(this.level.endboss);
-
+        this.insertDrawableObjects();
         this.ctx.translate(-this.camera_x, 0); //Back
         // ----- space for fixed objects ------
-        this.addToMap(this.statusBarBottle);
-        this.addToMap(this.statusBarHealth);
-        if (this.level.endboss.alertLoop >= 1) {
-            this.addToMap(this.statusBarHealthBoss);
-        }
-        this.addToMap(this.statusBarCoin);
+        this.insertStatusbars();
         this.ctx.translate(this.camera_x, 0); //Forwards
-
-
         //------ end space for fixed objects-----
         this.addToMap(this.character);
         this.ctx.translate(-this.camera_x, 0);
-
-
-        //TODO
         //draw() will be called in the same speed as the user screen refreshrate caused by requestAnimationFrame
         requestAnimationFrame(() => {
             this.draw();
@@ -169,8 +185,6 @@ class World {
         }
         mo.drawObjectToMap(this.ctx);
         // mo.drawFrameAroundObject(this.ctx);
-        //TODO ADD THIS WHEN WE ADD DRAWCODRINATES
-        // mo.drawCoordinates(this.ctx);
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
@@ -198,74 +212,36 @@ class World {
 
     //help function
 
-    charPicksUpCoin() {
-        this.level.coins.forEach(coin => {
-            if (this.character.isColliding(coin) && this.character.coinAmount < 100) {
-                this.pickCoinUp(coin);
-            }
-        });
+    insertDrawableObjects() {
+        //clears the screen everytime draw is called
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            //focus the camera on the character
+        this.ctx.translate(this.camera_x, 0);
+        this.addObjectToMap(this.level.backgroundObjects);
+        this.addObjectToMap(this.level.clouds);
+        this.addObjectToMap(this.level.bottles);
+        this.addObjectToMap(this.level.coins);
+        this.addObjectToMap(this.throwableObjects);
+        this.addObjectToMap(this.level.normalChicken);
+        this.addObjectToMap(this.level.smallChicken);
+        this.addToMap(this.level.endboss);
     }
 
 
-    pickCoinUp(coin) {
-        this.level.coins.splice(this.level.coins.indexOf(coin), 1);
-        this.character.coinAmount += 20;
-        this.statusBarCoin.setPercentage(this.character.coinAmount);
-    }
-
-
-    checkIfCharacrterCollidesBottle() {
-        this.level.bottles.forEach(bottle => {
-            if (this.checkInventorySpace(bottle)) {
-                this.pickBottleUp(bottle);
-            }
-        })
-    }
-
-
-    checkInventorySpace(bottle) {
-        return this.character.isColliding(bottle) && this.character.bottleInventoryCounter <= 4
-    }
-
-
-    pickBottleUp(bottle) {
-        this.character.bottleInventoryCounter++;
-        this.character.bottleAmount += 20;
-        this.statusBarBottle.setPercentage(this.character.bottleAmount);
-        this.level.bottles.splice(this.level.bottles.indexOf(bottle), 1);
-    }
-
-
-    healCharacter() {
-        if (this.checkIfCharacterDeservHeal()) {
-            this.healCharacterNow();
+    insertStatusbars() {
+        this.addToMap(this.statusBarBottle);
+        this.addToMap(this.statusBarHealth);
+        this.addToMap(this.statusBarCoin);
+        if (this.level.endboss.alertLoop >= 1) {
+            this.addToMap(this.statusBarHealthBoss);
         }
-    }
-
-
-    checkIfCharacterDeservHeal() {
-        return this.character.coinAmount == 100 && this.character.energy < 100
-    }
-
-
-    healCharacterNow() {
-        this.character.coinAmount = 0;
-        this.character.energy += 20;
-        this.statusBarCoin.setPercentage(this.character.coinAmount);
-        this.statusBarHealth.setPercentage(this.character.energy);
     }
 
 
     startEndbossBattle() {
         if (this.checkIfBossIsInVision()) {
-            // console.log('IN VISION')
             this.level.endboss.inVision = true;
         }
-    }
-
-
-    checkIfBossIsInVision() {
-        return !this.character.gamePaused && this.character.x >= 2000 && !this.level.endboss.denyCheck;
     }
 
 
@@ -289,67 +265,6 @@ class World {
     }
 
 
-    checkIfBossIsRightSide() {
-        return !this.level.endboss.isDead() && (this.character.x + (this.character.width / 2)) < this.level.endboss.x + (this.level.endboss.width / 2) - 600 && this.level.endboss.bossRageStart;
-    }
-
-
-    checkIfBossIsLeftSide() {
-        return !this.level.endboss.isDead() && this.character.x + (this.character.width / 2) > this.level.endboss.x + (this.level.endboss.width / 2) + 600 && this.level.endboss.bossRageStart;
-    }
-
-
-    //checks when last key was pressed and set timer to calculate characters idle animation start
-    lastKeyPressTimer() {
-        this.pressKey();
-    }
-
-
-    pressKey() {
-        this.pressKeyToSetIdleTimer();
-    }
-
-
-    pressKeyToSetIdleTimer() {
-        if (this.checkWhichKeyIsPressed()) {
-            this.character.lastKeyPress = new Date().getTime();
-        }
-    }
-
-
-    checkWhichKeyIsPressed() {
-        return keyboard.LEFT || keyboard.RIGHT || keyboard.UP || keyboard.DOWN || keyboard.SPACE || keyboard.D
-    }
-
-
-    gameEnding() {
-        if (this.gameEndsWhen()) {
-            this.initGameEnd();
-        }
-    }
-
-
-    gameEndsWhen() {
-        return this.character.isDead() || this.level.endboss.isDead() && !gameEnd;
-    }
-
-
-    initGameEnd() {
-        setTimeout(() => {
-            gameEnd = true;
-            for (let i = 1; i < 9999; i++) window.clearInterval(i);
-            gameEndScreen();
-        }, 4000);
-    }
-
-
-    checkWhichChickenIsDefeatedByJump(chickenVersion) {
-        chickenVersion.forEach((enemy) => {
-            this.characterHitsChickenFromTop(enemy, chickenVersion);
-        });
-    }
-
-
     throwBottleRight() {
         if (this.checkIfBottleFlyRightDirection()) {
             this.throwBottleTo(this.character.x + 50);
@@ -361,13 +276,6 @@ class World {
         if (this.checkIfBottleFlyLeftDirection()) {
             this.throwBottleTo(this.character.x - 10);
         }
-    }
-
-
-    characterThrowBottle() {
-        this.throwableObjects.forEach((bottle) => {
-            this.characterHitsEnemysWith(bottle);
-        });
     }
 
 
@@ -442,6 +350,7 @@ class World {
         this.character.bottleAmount -= 20;
         this.statusBarBottle.setPercentage(this.character.bottleAmount);
         this.throwableObjects.push(bottle);
+        this.character.lastBottleThrown = new Date().getTime();
     }
 
 
@@ -471,9 +380,43 @@ class World {
 
     //function that calculate the damage from chicken to Character
     calculateEnemyDamageToCharacter(enemy) {
-        console.log('chicken do dmg')
         this.character.hit(enemy.chickenDamage);
         this.statusBarHealth.setPercentage(this.character.energy);
+    }
+
+
+    checkInventorySpace(bottle) {
+        return this.character.isColliding(bottle) && this.character.bottleInventoryCounter <= 4
+    }
+
+
+    checkIfCharacterDeservHeal() {
+        return this.character.coinAmount == 100 && this.character.energy < 100
+    }
+
+
+    checkIfBossIsInVision() {
+        return !this.character.gamePaused && this.character.x >= 2000 && !this.level.endboss.denyCheck;
+    }
+
+
+    checkIfBossIsRightSide() {
+        return !this.level.endboss.isDead() && (this.character.x + (this.character.width / 2)) < this.level.endboss.x + (this.level.endboss.width / 2) - 600 && this.level.endboss.bossRageStart;
+    }
+
+
+    checkIfBossIsLeftSide() {
+        return !this.level.endboss.isDead() && this.character.x + (this.character.width / 2) > this.level.endboss.x + (this.level.endboss.width / 2) + 600 && this.level.endboss.bossRageStart;
+    }
+
+
+    checkWhichKeyIsPressed() {
+        return keyboard.LEFT || keyboard.RIGHT || keyboard.UP || keyboard.DOWN || keyboard.SPACE || keyboard.D
+    }
+
+
+    gameEndsWhen() {
+        return this.character.isDead() || this.level.endboss.isDead() && !gameEnd;
     }
 
 
