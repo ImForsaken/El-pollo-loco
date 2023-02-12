@@ -25,8 +25,7 @@
 }
 
 .gameScreen {
-    height: 480px;
-    width: 720px;
+    aspect-ratio: 720 / 480;
     position: relative;
     overflow: hidden;
 }
@@ -283,10 +282,10 @@ canvas {
 }
 
 @media only screen and (max-width: 720px) {
-    .gameScreen {
-        width: 100%;
-    }
 
+    /* .gameScreen {
+        width: 100%;
+    } */
     .fullscreenButton {
         display: none;
     }
@@ -313,9 +312,9 @@ canvas {
 
 
 /* @media (min-aspect-ratio: 720/ 480) {
-    canvas {
-        height: 100% !important;
-        width: 100% !important;
+    .gameScreen {
+        max-height: 100% !important;
+        max-width: 100% !important;
     }
 } */
 
@@ -376,15 +375,17 @@ canvas {
     }
 }
 
-@media only screen and (max-height: 480px) {
+
+/* @media only screen and (max-height: 480px) {
     canvas {
         height: 100vh;
     }
-}
+} */
 
 @media (max-width: 480px) {
     .startButton {
         bottom: 2px;
+        padding: 5px;
     }
 
     .infoButton {
@@ -421,5 +422,11 @@ canvas {
     .explainButton {
         height: 35;
         width: 35;
+    }
+}
+
+@media (max-width: 400px) {
+    .startButton {
+        font-size: 10px;
     }
 }
