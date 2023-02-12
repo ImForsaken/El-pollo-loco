@@ -1,6 +1,7 @@
 class ThrowableObject extends MovableObject {
     bottleHit = false;
     bottleDamage = 20;
+    throwBottle_sound = new Audio('audio/bottleThrow.mp3');
 
     IMAGES_SPLASH = [
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png',

@@ -14,6 +14,8 @@ class MovableObject extends DrawableObject {
     lastY = 0;
     isAlreadyDead = false;
     chickenDamage = 20;
+    chickenDead_sound = new Audio('audio/chicken_hit.mp3');
+    bottleSplash_sound = new Audio('audio/brokenBottle.mp3');
 
     offset = {
         top: 0,

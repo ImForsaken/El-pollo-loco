@@ -12,6 +12,11 @@ class World {
     throwableObjects = [];
     gameStarted = false;
     gamePaused = false;
+    gameSoundOn = true;
+    gameSoundOff = false;
+    gameStartAudio = new Audio('audio/gameBgrMusic.mp3');
+    itemPickUpAudio = new Audio('audio/itemPickUp.mp3');
+    levelWinSound = new Audio('audio/levelWin.mp3');
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -20,6 +25,7 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
+        this.soundCheck(this.gameStartAudio, 0.05);
         // this.run2();
     }
 
@@ -28,12 +34,19 @@ class World {
         this.character.world = this;
     }
 
+
     pause() {
+        this.gameSoundOff = true;
+        this.gameSoundOn = false;
+        this.soundCheck(this.gameStartAudio, 0.05);
         this.gamePaused = true;
     };
 
 
     start() {
+        this.gameSoundOff = false;
+        this.gameSoundOn = true;
+        this.soundCheck(this.gameStartAudio, 0.05);
         this.gamePaused = false;
     };
 
@@ -41,9 +54,11 @@ class World {
     checkGameEnd() {
         if (this.gameEndsWhen()) {
             setTimeout(() => {
+                this.gameSound(this.levelWinSound);
                 gameEnd = true;
                 gameStart = false;
                 for (let i = 1; i < 9999; i++) window.clearInterval(i);
+                world.gameStartAudio.pause();
                 gameEndScreen();
             }, 4000);
         }
@@ -63,6 +78,7 @@ class World {
             this.lastKeyPressTimer();
             this.checkGameEnd();
             this.checkThrowObjects();
+            this.soundCheck(this.gameStartAudio, 0.05);
         }, 50);
     }
 
@@ -91,6 +107,7 @@ class World {
     checkBottlePickUp() {
         this.level.bottles.forEach(bottle => {
             if (this.checkInventorySpace(bottle)) {
+                this.soundCheck(this.itemPickUpAudio, 0.07)
                 this.character.bottleInventoryCounter++;
                 this.character.bottleAmount += 20;
                 this.statusBarBottle.setPercentage(this.character.bottleAmount);
@@ -103,6 +120,7 @@ class World {
     checkCoinPickUp() {
         this.level.coins.forEach(coin => {
             if (this.character.isColliding(coin) && this.character.coinAmount < 100) {
+                this.soundCheck(this.itemPickUpAudio, 0.07);
                 this.level.coins.splice(this.level.coins.indexOf(coin), 1);
                 this.character.coinAmount += 20;
                 this.statusBarCoin.setPercentage(this.character.coinAmount);
@@ -204,13 +222,12 @@ class World {
 
     flipImageBack(mo) {
         mo.x = mo.x * -1;
-
         //restore the point of save();
         this.ctx.restore();
     }
 
 
-    //help function
+    //help functions
 
     insertDrawableObjects() {
         //clears the screen everytime draw is called
@@ -299,6 +316,7 @@ class World {
     bottleHitEndboss(bottle) {
         if (this.checkBossDamageWorthy(bottle)) {
             bottle.bottleHit = true;
+            this.gameSound(bottle.bottleSplash_sound);
             this.level.endboss.hit(bottle.bottleDamage);
             this.statusBarHealthBoss.setPercentage(this.level.endboss.energy);
         };
@@ -308,6 +326,7 @@ class World {
     bottleBreaksOnGround(bottle) {
         if (!this.gamePaused && bottle.lastY >= 340 && !bottle.bottleHit) {
             bottle.bottleHit = true;
+            this.gameSound(bottle.bottleSplash_sound);
             setTimeout(() => {
                 this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
             }, 500);
@@ -346,6 +365,7 @@ class World {
     //throws bottle to transfered direction
     throwBottleTo(direction) {
         let bottle = new ThrowableObject(direction, this.character.y + 100, this.character.otherDirection);
+        this.gameSound(bottle.throwBottle_sound);
         this.character.bottleInventoryCounter--;
         this.character.bottleAmount -= 20;
         this.statusBarBottle.setPercentage(this.character.bottleAmount);
@@ -359,6 +379,8 @@ class World {
         if (!this.gamePaused && bottle.isColliding(enemy) && !bottle.bottleHit && !enemy.isDead()) {
             bottle.bottleHit = true;
             enemy.hit(bottle.bottleDamage);
+            this.gameSound(bottle.bottleSplash_sound);
+            this.gameSound(enemy.chickenDead_sound);
             setTimeout(() => {
                 chickenVersion.splice(chickenVersion.indexOf(enemy), 1);
                 this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
@@ -371,6 +393,7 @@ class World {
     characterHitsChickenFromTop(enemy, chickenVersion) {
         if (this.checkIfCharacterHitsChickenFromTop(enemy)) {
             enemy.hit(this.character.charDmg);
+            this.gameSound(enemy.chickenDead_sound);
             setTimeout(() => {
                 chickenVersion.splice(chickenVersion.indexOf(enemy), 1);
             }, 500);
@@ -382,6 +405,7 @@ class World {
     calculateEnemyDamageToCharacter(enemy) {
         this.character.hit(enemy.chickenDamage);
         this.statusBarHealth.setPercentage(this.character.energy);
+        this.gameSound(this.character.charHurt_sound);
     }
 
 
@@ -457,6 +481,22 @@ class World {
 
     checkIfBottleFlyLeftDirection() {
         return !this.character.gamePaused && keyboard.D && this.character.otherDirection && !this.character.isDead() && this.character.bottleInventoryCounter > 0;
+    }
+
+
+    soundCheck(soundFile, volumeLevel) {
+        if (this.gameSoundOn && !this.gameEnd) {
+            soundFile.volume = volumeLevel;
+            soundFile.play();
+        } else {
+            soundFile.pause();
+        }
+    }
+
+
+    gameSound(object) {
+        object.volume = 0.07;
+        object.play();
     }
 
 

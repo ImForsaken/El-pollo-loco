@@ -9,6 +9,10 @@ class Character extends MovableObject {
     lastBottleThrown = new Date().getTime();
     cameraSpeed = 5;
     walking_sound = new Audio('audio/standardWalking.mp3');
+    jump_sound = new Audio('audio/jump.mp3');
+    charDead_sound = new Audio('audio/charDead.mp3');
+    charHurt_sound = new Audio('audio/hurt.mp3');
+
     offset = {
         top: 80,
         left: 15,
@@ -136,7 +140,7 @@ class Character extends MovableObject {
     charMovementSounds() {
         //makes sound reset after stop pressing a key to run with the Character
         setInterval(() => {
-            if (!this.world.keyboard.RIGHT && !this.world.keyboard.LEFT) this.playWalkingSound();
+            if (!this.world.keyboard.RIGHT && !this.world.keyboard.LEFT) this.stopWalkingSound();
         }, 1000 / 60);
     }
 
@@ -187,6 +191,7 @@ class Character extends MovableObject {
     charJump() {
         if (this.checkCharJump()) {
             this.jump();
+            world.soundCheck(this.jump_sound, 0.2);
         }
     }
 
@@ -194,7 +199,9 @@ class Character extends MovableObject {
     moveCharToRight() {
         this.moveRight();
         this.otherDirection = false;
-        this.walking_sound.play();
+        if (!this.isAboveGround()) {
+            world.soundCheck(this.walking_sound, 0.05);
+        }
         if (world.camera_x == -this.x + 120 + 5) {
             world.camera_x = -this.x + 120;
         }
@@ -203,7 +210,9 @@ class Character extends MovableObject {
 
     moveCharToLeft() {
         this.moveLeft(this.speed);
-        this.walking_sound.play();
+        if (!this.isAboveGround()) {
+            world.soundCheck(this.walking_sound, 0.05);
+        }
         this.otherDirection = true;
         if (world.camera_x == (-this.x + 500) - 5) {
             world.camera_x = -this.x + 500;
@@ -250,7 +259,7 @@ class Character extends MovableObject {
     }
 
 
-    playWalkingSound() {
+    stopWalkingSound() {
         this.walking_sound.pause();
         this.walking_sound.currentTime = 0.5;
     }
@@ -293,6 +302,7 @@ class Character extends MovableObject {
 
     playDead() {
         if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
+            world.soundCheck(this.charDead_sound, 0.3);
             this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
             this.deadLoop += 1;
         }

@@ -13,8 +13,6 @@
     display: flex;
 }
 
-body {}
-
 .gameBox {
     height: 100vh;
     width: 100vw;
@@ -101,9 +99,14 @@ body {}
     border-left: black 2px solid;
 }
 
+.doubleExplaintButtons {
+    display: flex;
+    gap: 5px;
+}
+
 .explainButton {
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
 }
 
 .startButton {
@@ -149,7 +152,7 @@ body {}
     height: 45px;
     width: 45px;
     right: 2px;
-    top: 50px;
+    top: 55px;
 }
 
 .pausePlayButton:hover {
@@ -163,8 +166,8 @@ body {}
     height: 45px;
     width: 45px;
     right: 2px;
-    top: 100px;
-    border: 3.5px solid;
+    top: 160px;
+    border: 3px solid;
     border-radius: 50%;
 }
 
@@ -172,10 +175,21 @@ body {}
     scale: 1.05;
 }
 
+.playPauseAudioButton {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 105px;
+}
+
+.playPauseAudioButton:hover {
+    scale: 1.05;
+}
+
 .fullscreenButton {
     position: absolute;
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
     bottom: 0;
     right: 0;
     z-index: 5;
@@ -203,8 +217,8 @@ body {}
 .arrowLeftButton {
     border: none;
     background-color: transparent;
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
     bottom: 10px;
     left: 10px;
 }
@@ -216,8 +230,8 @@ body {}
 .arrowRightButton {
     border: none;
     background-color: transparent;
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
     bottom: 10px;
     left: 70px;
 }
@@ -229,8 +243,8 @@ body {}
 .throwButton {
     border: none;
     background-color: transparent;
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
     bottom: 10px;
     right: 10px;
 }
@@ -242,8 +256,8 @@ body {}
 .jumpButton {
     border: none;
     background-color: transparent;
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
     bottom: 10px;
     right: 10px;
 }
@@ -262,6 +276,7 @@ canvas {
     0% {
         transform: scale(8);
     }
+
     100% {
         transform: scale(1);
     }
@@ -269,26 +284,57 @@ canvas {
 
 @media only screen and (max-width: 800px) {
     .gameScreen {
-        height: 100%;
         width: 100%;
     }
+
     .fullscreenButton {
         display: none;
     }
+
     .infoBox {
         justify-content: space-between;
         gap: 0;
         padding: 10px;
     }
-    /* .touchButtonsContainer {
-        display: flex;
+
+    .touchButtonBox {
+        gap: 40px;
     }
-    .showHideUiButton {
-        display: unset;
-    } */
 }
 
+@media only screen and (max-width: 700px) {
+    .arrowLeftButton {
+        height: 50px;
+        width: 50px;
+    }
 
-/* @media only screen and (max-width: 725px) and (min-width: 0px) {
+    .arrowRightButton {
+        height: 50px;
+        width: 50px;
+    }
 
-} */
+    .jumpButton {
+        height: 50px;
+        width: 50px;
+    }
+
+    .throwButton {
+        height: 50px;
+        width: 50px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .explainButton {
+        height: 40px;
+        width: 40px;
+    }
+
+    .infoBox {
+        font-size: 14px;
+    }
+
+    .infoText {
+        font-size: 14px;
+    }
+}

@@ -17,6 +17,8 @@ function init() {
     initLevel();
     addEventListeners();
     world = new World(canvas, keyboard);
+    // world.gameStartAudio.volume = 0.05;
+    // world.gameStartAudio.play();
     hideOrShowUi();
 }
 
@@ -122,6 +124,9 @@ function showInfoScreen(gameInfo, startButton) {
     }
     if (world && !gameEnd) {
         world.pause();
+        document.getElementById('playPauseAudioButton').style.display = 'none';
+        document.getElementById('touchButtonsContainer').style.display = 'none';
+        document.getElementById('showHideUiButton').style.display = 'none';
         document.getElementById('pausePlayButton').src = 'img/9_intro_outro_screens/playButton.png';
     }
 }
@@ -134,6 +139,9 @@ function closeInfoScreen(gameInfo, startButton) {
     }
     if (world && !gameEnd) {
         world.start();
+        document.getElementById('playPauseAudioButton').style.display = 'unset';
+        document.getElementById('touchButtonsContainer').style.display = 'flex';
+        document.getElementById('showHideUiButton').style.display = 'unset';
         document.getElementById('pausePlayButton').src = 'img/9_intro_outro_screens/pauseButton.png';
     }
 }
@@ -224,6 +232,8 @@ function manageUiTask() {
     document.getElementById('pausePlayButton').style.display = 'unset';
     document.getElementById('fullscreenButton').style.display = 'unset';
     document.getElementById('gameOutro').style.display = 'none';
+    document.getElementById('playPauseAudioButton').style.display = 'unset';
+
 }
 
 
@@ -236,32 +246,42 @@ function checkUserResolution() {
 }
 
 
+function playPauseAudio() {
+    buttonsrc = document.getElementById('playPauseAudioButton');
+    if (world.gameSoundOn) {
+        world.gameSoundOn = false;
+        world.gameSoundOff = true;
+        buttonsrc.src = 'img/9_intro_outro_screens/volumeOff.png';
+    } else {
+        world.gameSoundOn = true;
+        world.gameSoundOff = false;
+        buttonsrc.src = 'img/9_intro_outro_screens/volumeOn.png';
+    }
+}
+
+
 function addClickEvents() {
     document.getElementById('arrowLeftButton').addEventListener('mousedown', function() {
         keyboard.LEFT = true;
     });
-
     document.getElementById('arrowLeftButton').addEventListener('mouseup', function() {
         keyboard.LEFT = false;
     });
     document.getElementById('arrowRightButton').addEventListener('mousedown', function() {
         keyboard.RIGHT = true;
     });
-
     document.getElementById('arrowRightButton').addEventListener('mouseup', function() {
         keyboard.RIGHT = false;
     });
     document.getElementById('jumpButton').addEventListener('mousedown', function() {
         keyboard.SPACE = true;
     });
-
     document.getElementById('jumpButton').addEventListener('mouseup', function() {
         keyboard.SPACE = false;
     });
     document.getElementById('throwButton').addEventListener('mousedown', function() {
         keyboard.D = true;
     });
-
     document.getElementById('throwButton').addEventListener('mouseup', function() {
         keyboard.D = false;
     });
