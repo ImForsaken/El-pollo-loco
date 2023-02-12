@@ -64,7 +64,6 @@ function fullscreenMode() {
 
 function addEventListeners() {
     window.addEventListener('keydown', (e) => {
-        //TODO probaly change to .key or .code since keyCode is deprecated and not supported in few browsers
         listenForKeyDown(e);
     });
     window.addEventListener('keyup', (e) => {
@@ -239,6 +238,9 @@ function manageWorldStartedInfoScreen() {
         if (window.innerWidth <= 800 && !uiHidden) {
             document.getElementById('touchButtonsContainer').style.display = 'none';
         }
+        if (window.innerWidth <= 720) {
+            document.getElementById('pausePlayButton').style.display = 'none';
+        }
     }
 }
 
@@ -250,12 +252,12 @@ function manageCloseInfoWithMobile() {
         document.getElementById('playPauseAudioButton').style.display = 'unset';
         document.getElementById('pausePlayButton').src = 'img/9_intro_outro_screens/pauseButton.png';
     }
+    if (window.innerWidth >= 800 && gameStart) document.getElementById('pausePlayButton').style.display = 'unset';
     if (window.innerWidth <= 800 && gameStart) {
         document.getElementById('fullscreenButton').style.display = 'none';
         document.getElementById('showHideUiButton').style.display = 'unset';
-        if (!uiHidden) {
-            document.getElementById('touchButtonsContainer').style.display = 'flex';
-        }
+        if (!uiHidden) document.getElementById('touchButtonsContainer').style.display = 'flex';
+        if (window.innerWidth <= 720) document.getElementById('pausePlayButton').style.display = 'unset';
     }
 }
 

@@ -311,6 +311,14 @@ canvas {
     }
 }
 
+
+/* @media (min-aspect-ratio: 720/ 480) {
+    canvas {
+        height: 100% !important;
+        width: 100% !important;
+    }
+} */
+
 @media only screen and (max-width: 700px) {
     .arrowLeftButton {
         height: 50px;
@@ -337,6 +345,11 @@ canvas {
     .infoButton {
         height: 45px;
         width: 45px;
+    }
+
+    .startButton {
+        bottom: 5;
+        font-size: 14px;
     }
 
     .pausePlayButton {
@@ -369,15 +382,11 @@ canvas {
     }
 }
 
-
-/* @media (max-width: 480px) {
-    .infoButton {
-        height: 40px;
-        width: 40px;
-    }
-} */
-
 @media (max-width: 480px) {
+    .startButton {
+        bottom: 2px;
+    }
+
     .infoButton {
         height: 35px;
         width: 35px;

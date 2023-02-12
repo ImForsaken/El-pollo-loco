@@ -23,13 +23,12 @@ class World {
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
-        this.canvas = canvas; //this.canvas stands for the instance variable on top while the canvas behind = stands for the parameter in the constructor
+        this.canvas = canvas;
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
         this.run();
         this.soundCheck(this.gameStartAudio, 0.05);
-        // this.run2();
     }
 
 
@@ -150,7 +149,6 @@ class World {
 
 
     //Character hits chicken from top and kills 
-
     characterJumpsOn(chickenVersion) {
         chickenVersion.forEach((enemy) => {
             this.characterHitsChickenFromTop(enemy, chickenVersion);
@@ -241,8 +239,8 @@ class World {
 
     insertDrawableObjects() {
         //clears the screen everytime draw is called
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            //focus the camera on the character
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        //focus the camera on the character
         this.ctx.translate(this.camera_x, 0);
         this.addObjectToMap(this.level.backgroundObjects);
         this.addObjectToMap(this.level.clouds);
