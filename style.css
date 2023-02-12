@@ -93,9 +93,8 @@
     display: flex;
     flex-direction: column;
     width: 50%;
-    justify-content: center;
+    justify-content: space-evenly;
     padding: 10px;
-    gap: 50px;
     border-left: black 2px solid;
 }
 
@@ -178,7 +177,7 @@
 .playPauseAudioButton {
     display: none;
     position: absolute;
-    right: 0;
+    right: 2px;
     top: 105px;
 }
 
@@ -269,6 +268,7 @@
 canvas {
     height: 100%;
     width: 100%;
+    display: block;
     background-color: black;
 }
 
@@ -282,7 +282,7 @@ canvas {
     }
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 720px) {
     .gameScreen {
         width: 100%;
     }
@@ -295,6 +295,15 @@ canvas {
         justify-content: space-between;
         gap: 0;
         padding: 10px;
+    }
+
+    .infoText {
+        font-size: 14px;
+    }
+
+    .explainButton {
+        height: 40px;
+        width: 40px;
     }
 
     .touchButtonBox {
@@ -325,7 +334,22 @@ canvas {
 }
 
 @media only screen and (max-width: 600px) {
-    .explainButton {
+    .infoButton {
+        height: 45px;
+        width: 45px;
+    }
+
+    .pausePlayButton {
+        height: 40px;
+        width: 40px;
+    }
+
+    .playPauseAudioButton {
+        height: 40px;
+        width: 40px;
+    }
+
+    .showHideUiButton {
         height: 40px;
         width: 40px;
     }
@@ -336,5 +360,57 @@ canvas {
 
     .infoText {
         font-size: 14px;
+    }
+}
+
+@media only screen and (max-height: 480px) {
+    canvas {
+        height: 100vh;
+    }
+}
+
+
+/* @media (max-width: 480px) {
+    .infoButton {
+        height: 40px;
+        width: 40px;
+    }
+} */
+
+@media (max-width: 480px) {
+    .infoButton {
+        height: 35px;
+        width: 35px;
+    }
+
+    .pausePlayButton {
+        height: 30px;
+        width: 30px;
+        top: 38px;
+    }
+
+    .playPauseAudioButton {
+        height: 30px;
+        width: 30px;
+        top: 70px;
+    }
+
+    .showHideUiButton {
+        height: 30px;
+        width: 30px;
+        top: 100px;
+    }
+
+    .infoBox {
+        font-size: 12px;
+    }
+
+    .infoText {
+        font-size: 12px;
+    }
+
+    .explainButton {
+        height: 35;
+        width: 35;
     }
 }

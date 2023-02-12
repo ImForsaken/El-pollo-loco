@@ -14,7 +14,7 @@ class MovableObject extends DrawableObject {
     lastY = 0;
     isAlreadyDead = false;
     chickenDamage = 20;
-    chickenDead_sound = new Audio('audio/chicken_hit.mp3');
+    chickenHit_sound = new Audio('audio/chicken_hit.mp3');
     bottleSplash_sound = new Audio('audio/brokenBottle.mp3');
 
     offset = {
@@ -73,8 +73,6 @@ class MovableObject extends DrawableObject {
     };
 
 
-    //TODO new variablen declaration for better syntax
-
     isColliding(mo) {
         return this.charRightCollideMoLeft(mo) &&
             this.charBottomCollideMoTop(mo) &&
@@ -82,8 +80,8 @@ class MovableObject extends DrawableObject {
             this.charTopCollideWithMoBottom(mo);
     };
 
-    //Colliding functions seperated for better syntax
 
+    //Colliding functions seperated for better syntax
     isCollidingHorizontal(mo) {
         return this.charRightCollideMoLeft(mo) && this.charLeftCollideMoRight(mo);
     };
@@ -268,5 +266,4 @@ class MovableObject extends DrawableObject {
     checkIfChickenIsMoving() {
         return !this.speed == 0 && !world.gamePaused && !this.isDead();
     }
-
 }

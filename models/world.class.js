@@ -12,11 +12,14 @@ class World {
     throwableObjects = [];
     gameStarted = false;
     gamePaused = false;
+    gameWon = false;
+    gameLost = false;
     gameSoundOn = true;
     gameSoundOff = false;
     gameStartAudio = new Audio('audio/gameBgrMusic.mp3');
     itemPickUpAudio = new Audio('audio/itemPickUp.mp3');
     levelWinSound = new Audio('audio/levelWin.mp3');
+    levelLoseSound = new Audio('audio/gameLose.mp3');
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -36,29 +39,27 @@ class World {
 
 
     pause() {
-        this.gameSoundOff = true;
-        this.gameSoundOn = false;
-        this.soundCheck(this.gameStartAudio, 0.05);
+        if (gameEnd) {
+            this.soundCheck(this.gameStartAudio, 0.05);
+        }
         this.gamePaused = true;
     };
 
 
     start() {
-        this.gameSoundOff = false;
-        this.gameSoundOn = true;
-        this.soundCheck(this.gameStartAudio, 0.05);
+        if (gameEnd) {
+            this.soundCheck(this.gameStartAudio, 0.05);
+        }
         this.gamePaused = false;
     };
 
 
     checkGameEnd() {
         if (this.gameEndsWhen()) {
+            gameEnd = true;
             setTimeout(() => {
-                this.gameSound(this.levelWinSound);
-                gameEnd = true;
-                gameStart = false;
-                for (let i = 1; i < 9999; i++) window.clearInterval(i);
-                world.gameStartAudio.pause();
+                this.checkGameWonOrLose();
+                this.manageGameEnd();
                 gameEndScreen();
             }, 4000);
         }
@@ -83,19 +84,12 @@ class World {
     }
 
 
-    //checks which direction the bottle should fly --- update--- inserted a bootleTHrow cooldown if not good remove cooldown and set this interval to controll bottles not being spammed
-    // run2() {
-    //     setInterval(() => {}, 250);
-    // }
-
-
     checkBossCordinates() {
         this.startEndbossBattle();
         this.checkIfBossIsLeftOrRight();
     }
 
 
-    //TODO THIS:CHARACTER MAYBE DELETE AS PAREMTER SAME FOR THROWABLE CLASS
     checkThrowObjects() {
         if (this.character.throwBottleCooldown(this.character.bottleCooldown)) {
             this.throwBottleRight();
@@ -155,7 +149,7 @@ class World {
     };
 
 
-    //Character hits chicken from top and kills         this.character.y <= 115
+    //Character hits chicken from top and kills 
 
     characterJumpsOn(chickenVersion) {
         chickenVersion.forEach((enemy) => {
@@ -228,6 +222,22 @@ class World {
 
 
     //help functions
+
+    checkGameWonOrLose() {
+        if (this.gameLost && !this.gameWon) {
+            this.gameSound(this.levelLoseSound);
+        } else if (!this.gameLost && this.gameWon) {
+            this.gameSound(this.levelWinSound);
+        }
+    }
+
+
+    manageGameEnd() {
+        gameStart = false;
+        for (let i = 1; i < 9999; i++) window.clearInterval(i);
+        world.gameStartAudio.pause();
+    }
+
 
     insertDrawableObjects() {
         //clears the screen everytime draw is called
@@ -316,6 +326,7 @@ class World {
     bottleHitEndboss(bottle) {
         if (this.checkBossDamageWorthy(bottle)) {
             bottle.bottleHit = true;
+            this.gameSound(this.level.endboss.chickenHit_sound)
             this.gameSound(bottle.bottleSplash_sound);
             this.level.endboss.hit(bottle.bottleDamage);
             this.statusBarHealthBoss.setPercentage(this.level.endboss.energy);
@@ -380,7 +391,7 @@ class World {
             bottle.bottleHit = true;
             enemy.hit(bottle.bottleDamage);
             this.gameSound(bottle.bottleSplash_sound);
-            this.gameSound(enemy.chickenDead_sound);
+            this.gameSound(enemy.chickenHit_sound);
             setTimeout(() => {
                 chickenVersion.splice(chickenVersion.indexOf(enemy), 1);
                 this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
@@ -393,7 +404,7 @@ class World {
     characterHitsChickenFromTop(enemy, chickenVersion) {
         if (this.checkIfCharacterHitsChickenFromTop(enemy)) {
             enemy.hit(this.character.charDmg);
-            this.gameSound(enemy.chickenDead_sound);
+            this.gameSound(enemy.chickenHit_sound);
             setTimeout(() => {
                 chickenVersion.splice(chickenVersion.indexOf(enemy), 1);
             }, 500);
@@ -406,6 +417,24 @@ class World {
         this.character.hit(enemy.chickenDamage);
         this.statusBarHealth.setPercentage(this.character.energy);
         this.gameSound(this.character.charHurt_sound);
+    }
+
+
+    soundCheck(soundFile, volumeLevel) {
+        if (this.gameSoundOn && !this.gameEnd) {
+            soundFile.volume = volumeLevel;
+            soundFile.play();
+        } else {
+            soundFile.pause();
+        }
+    }
+
+
+    gameSound(object) {
+        if (this.gameSoundOn && !this.gameEnd) {
+            object.volume = 0.07;
+            object.play();
+        }
     }
 
 
@@ -481,22 +510,6 @@ class World {
 
     checkIfBottleFlyLeftDirection() {
         return !this.character.gamePaused && keyboard.D && this.character.otherDirection && !this.character.isDead() && this.character.bottleInventoryCounter > 0;
-    }
-
-
-    soundCheck(soundFile, volumeLevel) {
-        if (this.gameSoundOn && !this.gameEnd) {
-            soundFile.volume = volumeLevel;
-            soundFile.play();
-        } else {
-            soundFile.pause();
-        }
-    }
-
-
-    gameSound(object) {
-        object.volume = 0.07;
-        object.play();
     }
 
 

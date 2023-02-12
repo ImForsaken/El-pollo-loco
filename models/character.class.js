@@ -161,10 +161,8 @@ class Character extends MovableObject {
             } else if (this.checkCharWalking()) {
                 this.playAnimation(this.IMAGES_WALKING);
             } else if (this.checkCharLongIdle()) {
-                console.log('long idle', this.characterStartLongIdling(this.startIdle));
                 this.playAnimation(this.IMAGES_LONG_IDLE);
             } else if (this.checkCharIdle()) {
-                console.log('short idle', this.characterStartIdling(this.startIdle));
                 this.playAnimation(this.IMAGES_IDLE);
             } else if (this.checkCharIsAfk()) {
                 this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
@@ -303,6 +301,7 @@ class Character extends MovableObject {
     playDead() {
         if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
             world.soundCheck(this.charDead_sound, 0.3);
+            world.gameLost = true;
             this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
             this.deadLoop += 1;
         }
@@ -312,5 +311,4 @@ class Character extends MovableObject {
     smoothCamera(speed) {
         world.camera_x -= speed;
     };
-
 }

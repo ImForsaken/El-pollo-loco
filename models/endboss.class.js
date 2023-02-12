@@ -107,7 +107,6 @@ class Endboss extends MovableObject {
         if (this.alertLoop <= (this.IMAGES_ALERT.length - 1)) {
             this.loadImage(this.IMAGES_ALERT[this.alertLoop]);
             this.alertLoop += 1;
-            console.log(this.alertLoop)
         } else if (this.alertLoop == 8 && this.inVision) {
             this.bossRageStart = true;
             this.inVision = false;
@@ -128,6 +127,7 @@ class Endboss extends MovableObject {
     playDead() {
         if (this.deadLoop <= (this.IMAGES_DEAD.length - 1)) {
             this.loadImage(this.IMAGES_DEAD[this.deadLoop]);
+            world.gameWon = true;
             this.deadLoop += 1;
         }
     }

@@ -19,6 +19,4 @@ class StatusbarHealth extends DrawableObject {
         this.setPercentage(100);
     }
 
-
-
 }
