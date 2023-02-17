@@ -26,14 +26,8 @@ class World {
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.draw();
-        this.setWorld();
         this.run();
         this.soundCheck(this.gameStartAudio, 0.05);
-    }
-
-
-    setWorld() {
-        this.character.world = this;
     }
 
 
